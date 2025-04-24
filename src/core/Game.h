@@ -37,6 +37,7 @@ private:
     // Member variables
     sf::RenderWindow m_window;
     sf::Font m_font;
+    sf::Texture m_enemy_texture;
     sf::Text m_logText;
     sf::Text m_instructions;
     std::string m_log;

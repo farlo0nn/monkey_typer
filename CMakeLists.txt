@@ -48,8 +48,8 @@ add_executable(Funzies src/main.cpp
         src/logic/WordPriority.cpp
         src/logic/WordPriority.h
         src/entities/enemy/SpawnPosition.h
-        src/entities/enemy/EnemyPosition.h
-        src/entities/enemy/EnemyPosition.cpp
+        src/entities/enemy/EnemyState.h
+        src/entities/enemy/EnemyState.cpp
         src/entities/enemy/Enemy.cpp
         src/entities/enemy/Spawner.cpp
         src/entities/enemy/Spawner.h

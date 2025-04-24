@@ -4,7 +4,7 @@
 #include <iostream>
 #include <random>
 
-#include "../entities/enemy/EnemyPosition.h"
+#include "../entities/enemy/EnemyState.h"
 #include "../entities/enemy/SpawnPosition.h"
 #include "fmt/format.h"
 
@@ -18,29 +18,35 @@ Game::Game()
     m_general_glossary(),
     m_round_glossary(),
     m_spawner(1.5, 3),
-    m_round_number(1)
+    m_round_number(1),
+    m_enemy_texture("assets/textures/img.png", false, sf::IntRect({10, 10}, {32, 32}))
 {
     m_window.setFramerateLimit(60);
     m_window.setVerticalSyncEnabled(true);
     m_logText.setFillColor(sf::Color::White);
     m_instructions.setFillColor(sf::Color::White);
     m_instructions.setStyle(sf::Text::Bold);
-    m_instructions.setPosition({380.f, 310.f});
     m_general_glossary.load(WORDS_PATH);
 
     if (m_round_number == 1) {
-        m_round_glossary.add(m_general_glossary.get_random_words(m_round_number*5 + 10));
+        m_round_glossary.add(m_general_glossary.get_random_words(m_round_number*5 - 4));
     }
 
     for (auto word : m_round_glossary.as_vector()) {
+        // auto position = ENEMY_SPAWN_POSITIONS.at(SpawnPositions::get_random_spawn_position());
+        auto position = EnemyState({100,300});
+
+        // std::cout << position.position.x << " " << position.position.y << std::endl;
+        // std::cout << position.direction.x << " " << position.direction.y << std::endl;
         m_spawner.enqueue(
             Enemy(
-                ENEMY_SPAWN_POSITIONS.at(SpawnPositions::get_random_spawn_position()),
-                word
+                position,
+                word,
+                m_enemy_texture,
+                m_font
             )
         );
     }
-    std::cout << m_general_glossary.get_words().size() << std::endl;
 }
 
 auto Game::handle(const sf::Event::Closed&) -> void {
@@ -135,28 +141,15 @@ auto Game::run() -> void
         //     text.setPosition(word.position);
         //     words_textboxes.push_back(text);
         // }
-        //
-        // drawLog();
-        //
-        // for (const auto& text : words_textboxes)
-        //     m_window.draw(text);
 
-
-
-        if (clock.getElapsedTime().asSeconds() > 1.f) {
-            for (auto enemy : m_spawner.getActiveEnemies()) {
-                std::cout << "<" << enemy.word.value  << ":" << enemy.position.direction.x << "," << enemy.position.direction.y << ">, ";
-            }
-            std::cout << std::endl;
-            clock.restart();
-        }
 
         auto deltaTime = clock.restart().asSeconds();
 
-        for (auto enemy : m_spawner.getActiveEnemies())
-            enemy.move(enemy.position.direction * m_round_number * 0.4 * BASE_SPEED * deltaTime);
+        for (auto enemy : m_spawner.getActiveEnemies()) {
+            enemy.update(m_round_number, deltaTime);
+            m_window.draw(enemy);
+        }
 
-        m_window.draw(m_instructions);
         m_window.display();
 
 
