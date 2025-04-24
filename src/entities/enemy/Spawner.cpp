@@ -21,7 +21,7 @@ auto Spawner::enqueue(const Enemy &enemy) -> void {
     this->spawnQueue.push(enemy);
 }
 
-const std::vector<Enemy>& Spawner::getActiveEnemies() const {
+const std::vector<Enemy>& Spawner::get_active_enemies() const {
     return activeEnemies;
 }
 

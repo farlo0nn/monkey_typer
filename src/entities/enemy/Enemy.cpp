@@ -14,7 +14,6 @@ auto Enemy::update(int round, float deltaTime) -> void {
         state.direction.x * BASE_SPEED * round * 0.4f * deltaTime,
         state.direction.y * BASE_SPEED * round * 0.4f * deltaTime
     };
-    std::cout << move_to.first << std::endl;
     sprite.move({move_to.first, move_to.second});
     update_label_position();
 }

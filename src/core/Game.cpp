@@ -145,7 +145,7 @@ auto Game::run() -> void
 
         auto deltaTime = clock.restart().asSeconds();
 
-        for (auto enemy : m_spawner.getActiveEnemies()) {
+        for (auto enemy : m_spawner.get_active_enemies()) {
             enemy.update(m_round_number, deltaTime);
             m_window.draw(enemy);
         }
