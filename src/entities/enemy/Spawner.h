@@ -12,7 +12,7 @@ public:
 
     void enqueue(const Enemy& enemy);
     void update();
-    const std::vector<Enemy>& get_active_enemies() const;
+    auto get_active_enemies() -> std::vector<Enemy>&;
 
 private:
     std::queue<Enemy> spawnQueue;

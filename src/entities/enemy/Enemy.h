@@ -16,6 +16,7 @@ public:
     auto is_dead() const -> bool;
 
     auto get_enemy_state() const -> EnemyState;
+    auto get_sprite() -> sf::Sprite;
 
     auto set_position(const sf::Vector2f& pos) -> void;
     auto get_displayed_word() const -> const sf::Text&;

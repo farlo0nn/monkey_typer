@@ -1,4 +1,7 @@
 #include "Enemy.h"
+
+#include <iostream>
+
 #include "../../Constants.cpp"
 
 Enemy::Enemy(EnemyState state, const Word& word, const sf::Texture& texture, const sf::Font& font)
@@ -10,11 +13,13 @@ Enemy::Enemy(EnemyState state, const Word& word, const sf::Texture& texture, con
 }
 
 auto Enemy::update(int round, float deltaTime) -> void {
-    auto move_to = std::pair<float, float>{
-        state.direction.x * BASE_SPEED * round * 0.4f * deltaTime,
-        state.direction.y * BASE_SPEED * round * 0.4f * deltaTime
+    auto velocity = BASE_SPEED * (0.4f * round);
+    auto move_to = sf::Vector2f{
+        state.direction.x * velocity * deltaTime,
+        state.direction.y * velocity * deltaTime
     };
-    sprite.move({move_to.first, move_to.second});
+    sprite.move(move_to);
+    std::cout << sprite.getPosition().x << " " << sprite.getPosition().y << std::endl;
     update_label_position();
 }
 
@@ -27,7 +32,9 @@ auto Enemy::update_label_position() -> void {
     });
 }
 
-
+auto Enemy::get_sprite() -> sf::Sprite {
+    return sprite;
+}
 
 auto Enemy::get_lives() const -> int {
     return lives;

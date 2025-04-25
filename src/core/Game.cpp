@@ -29,12 +29,12 @@ Game::Game()
     m_general_glossary.load(WORDS_PATH);
 
     if (m_round_number == 1) {
-        m_round_glossary.add(m_general_glossary.get_random_words(m_round_number*5 - 4));
+        m_round_glossary.add(m_general_glossary.get_random_words(m_round_number*5 + 5));
     }
 
     for (auto word : m_round_glossary.as_vector()) {
-        // auto position = ENEMY_SPAWN_POSITIONS.at(SpawnPositions::get_random_spawn_position());
-        auto position = EnemyState({100,300});
+        auto position = ENEMY_SPAWN_POSITIONS.at(SpawnPositions::get_random_spawn_position());
+        // auto position = EnemyState({100,300});
 
         // std::cout << position.position.x << " " << position.position.y << std::endl;
         // std::cout << position.direction.x << " " << position.direction.y << std::endl;
@@ -145,9 +145,10 @@ auto Game::run() -> void
 
         auto deltaTime = clock.restart().asSeconds();
 
-        for (auto enemy : m_spawner.get_active_enemies()) {
+        for (auto& enemy : m_spawner.get_active_enemies()) {
             enemy.update(m_round_number, deltaTime);
             m_window.draw(enemy);
+
         }
 
         m_window.display();
