@@ -20,6 +20,12 @@ public:
 
     auto set_position(const sf::Vector2f& pos) -> void;
     auto get_displayed_word() const -> const sf::Text&;
+    auto get_word_value() const -> const std::string&;
+    auto get_typing_index() const -> int;
+    auto get_current_expected_char() const -> char;
+    // auto type_next_char()
+    auto is_active_target() const -> bool;
+    auto set_as_active_target() -> void;
 
 private:
     EnemyState state;
@@ -28,8 +34,12 @@ private:
     sf::Text displayed_word;
     Word word;
     int lives;
+    size_t typing_index;
+    bool active_target;
+
 
     auto update_label_position() -> void;
+    auto update_text_color() -> void;
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
         target.draw(sprite, states);
