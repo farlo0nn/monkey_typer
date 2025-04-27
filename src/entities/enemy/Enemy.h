@@ -7,25 +7,23 @@
 class Enemy : public sf::Drawable {
 public:
 
-    // Constructor needs a font and initial position
     Enemy(EnemyState state, const Word &word, const sf::Texture &texture, const sf::Font &font);
 
     auto update(int round, float deltaTime) -> void;
-    auto get_lives() const -> int;
-    auto damage(int amount) -> void;
-    auto is_dead() const -> bool;
 
     auto get_enemy_state() const -> EnemyState;
-    auto get_sprite() -> sf::Sprite;
+    auto get_sprite() const -> const sf::Sprite&;
 
     auto set_position(const sf::Vector2f& pos) -> void;
     auto get_displayed_word() const -> const sf::Text&;
-    auto get_word_value() const -> const std::string&;
+    auto get_word() const -> const Word&;
     auto get_typing_index() const -> int;
+    auto type_next_char() -> void;
     auto get_current_expected_char() const -> char;
-    // auto type_next_char()
-    auto is_active_target() const -> bool;
-    auto set_as_active_target() -> void;
+    auto is_active() const -> bool;
+    auto is_word_typed() -> bool;
+    auto set_active(bool active) -> void;
+    auto operator==(const Enemy& other) const -> bool;
 
 private:
     EnemyState state;
@@ -33,11 +31,11 @@ private:
     sf::Texture texture;
     sf::Text displayed_word;
     Word word;
-    int lives;
     size_t typing_index;
     bool active_target;
 
 
+    auto reset_typing() -> void;
     auto update_label_position() -> void;
     auto update_text_color() -> void;
 

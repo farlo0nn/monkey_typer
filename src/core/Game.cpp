@@ -13,7 +13,6 @@ Game::Game()
     m_font{FONT_PATH},
     m_logText{m_font, "", 20},
     m_instructions{m_font, "Press Enter to change handler type", 24},
-    m_handlerType{HandlerType::Classic},
     m_spawner(1.5, 3),
     m_round_number(1),
     m_enemy_texture("assets/textures/img.png", false, sf::IntRect({10, 10}, {32, 32}))
@@ -24,12 +23,11 @@ Game::Game()
     m_instructions.setFillColor(sf::Color::White);
     m_instructions.setStyle(sf::Text::Bold);
     m_general_glossary.load(WORDS_PATH);
+    config_round();
+}
 
-    if (m_round_number == 1) {
-        m_round_glossary.add(m_general_glossary.get_random_words(m_round_number*5 + 5));
-    }
-
-    for (auto word : m_round_glossary.as_vector()) {
+auto Game::config_round() -> void {
+    for (auto word : m_general_glossary.get_random_words(m_round_number*5 + 5)) {
         auto position = ENEMY_SPAWN_POSITIONS.at(SpawnPositions::get_random_spawn_position());
         m_spawner.enqueue(
             Enemy(
@@ -49,18 +47,13 @@ auto Game::handle(const sf::Event::Closed&) -> void {
 auto Game::handle(const sf::Event::TextEntered& textEntered) -> void {
     uint32_t u = textEntered.unicode;
     auto c = static_cast<char>(u);
-    if (std::isalpha(c)) {
-        c = std::tolower(c);
+    m_typer.type(c);
 
-
-    }
 }
 
 auto Game::handle(const sf::Event::KeyPressed& keyPress) -> void{
-    if (keyPress.code == sf::Keyboard::Key::Backspace) {
-        if (m_log.size() > 0) {
-            m_log.pop_back();
-        }
+    if (keyPress.code == sf::Keyboard::Key::Escape) {
+        m_typer.reset_word_typing();
     }
 }
 
@@ -76,7 +69,6 @@ auto Game::handle(const T&) -> void {
 
 auto Game::run() -> void
 {
-
     auto clock = sf::Clock();
 
     while (m_window.isOpen())
@@ -85,16 +77,22 @@ auto Game::run() -> void
             event->visit([this](auto& e) { this->handle(e); });
         }
 
-        m_spawner.update();
+        m_typer.glossary.add(m_spawner.update());
 
         m_window.clear();
 
         auto deltaTime = clock.restart().asSeconds();
 
-        for (auto& enemy : m_spawner.get_active_enemies()) {
+
+        for (auto& enemy : m_typer.glossary.as_vector()) {
             enemy.update(m_round_number, deltaTime);
             m_window.draw(enemy);
+        }
 
+        if (m_typer.glossary.empty() && m_spawner.empty()) {
+            m_window.draw(m_instructions);
+            m_round_number++;
+            config_round();
         }
 
         m_window.display();

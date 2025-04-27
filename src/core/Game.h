@@ -4,6 +4,7 @@
 #include "../entities/enemy/Spawner.h"
 #include "../logic/GeneralGlossary.h"
 #include "../logic/RoundGlossary.h"
+#include "../logic/Typer.h"
 
 class Game
 {
@@ -12,16 +13,8 @@ public:
     auto run() -> void;
 
 private:
-    enum class HandlerType
-    {
-        Classic,
-        Visitor,
-        Overload,
-        Generic,
-        Forward
-    };
 
-    // Event handlers
+    // event handlers
     auto  handle(const sf::Event::Closed&) -> void;
     auto handle(const sf::Event::KeyPressed& keyPress) -> void;
     auto handle(const sf::Event::MouseMoved& mouseMoved) -> void;
@@ -32,6 +25,7 @@ private:
     template <typename T>
     auto handle(const T&) -> void;
 
+    auto config_round() -> void;
     auto drawLog() -> void;
 
     // Member variables
@@ -41,9 +35,8 @@ private:
     sf::Text m_logText;
     sf::Text m_instructions;
     std::string m_log;
-    HandlerType m_handlerType;
     GeneralGlossary m_general_glossary;
-    RoundGlossary m_round_glossary;
     Spawner m_spawner;
     int m_round_number;
+    Typer m_typer;
 };

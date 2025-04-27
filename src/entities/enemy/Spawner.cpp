@@ -4,27 +4,25 @@
 
 Spawner::Spawner(float spawnDelay, int perWave): spawnDelaySeconds(spawnDelay), spawnPerWave(perWave) {}
 
-auto Spawner::update() -> void {
+auto Spawner::update() -> std::vector<Enemy> {
+    auto newEnemies = std::vector<Enemy>();
     if (spawnClock.getElapsedTime().asSeconds() >= spawnDelaySeconds) {
         auto i = int();
         while (i < spawnPerWave && !spawnQueue.empty()) {
-            activeEnemies.push_back(spawnQueue.front());
+            newEnemies.push_back(spawnQueue.front());
             spawnQueue.pop();
-            std::cout << activeEnemies.size() << std::endl;
             i++;
         }
         spawnClock.restart();
     }
+    return newEnemies;
 }
 
 auto Spawner::enqueue(const Enemy &enemy) -> void {
     spawnQueue.push(enemy);
 }
 
-auto Spawner::get_active_enemies() -> std::vector<Enemy>&{
-    return activeEnemies;
+auto Spawner::empty() -> bool {
+    return this->spawnQueue.empty();
 }
-
-
-
 

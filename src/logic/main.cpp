@@ -6,14 +6,12 @@
 
 
 
+class Typer {
+  sf::Enemy = active_target
+}
+
 int input_word(RoundGlossary& glossary, int& score) {
 
-  char letter;
-  while (std::cin >> letter && !glossary.has(letter)) {}
-
-  auto& words_queue = glossary.at(letter);
-
-  const Word& target_word = words_queue.top();
 
   auto next_char_to_match = target_word.value.begin() + 1;
 
