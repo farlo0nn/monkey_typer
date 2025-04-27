@@ -1,7 +1,5 @@
 #include "Spawner.h"
 
-#include <iostream>
-
 Spawner::Spawner(float spawnDelay, int perWave): spawnDelaySeconds(spawnDelay), spawnPerWave(perWave) {}
 
 auto Spawner::update() -> std::vector<Enemy> {
