@@ -5,11 +5,12 @@
 #include "../entities/enemy/Enemy.h"
 #include "../entities/enemy/EnemyPriority.h"
 
-typedef std::priority_queue<Enemy, std::vector<Enemy>, EnemyPriority> enemy_queue;
+namespace rg {
+    typedef std::unordered_map<char, std::deque<Enemy>> enemy_glossary;
+}
 
 class RoundGlossary {
-    std::unordered_map<char, enemy_queue> _glossary;
-    std::vector<Enemy> _enemies;
+    rg::enemy_glossary _glossary;
     int _enemy_number = int();
 
 public:
@@ -19,12 +20,9 @@ public:
 
     auto add(const std::vector<Enemy>& enemies) -> void;
     auto add(const Enemy& enemy) -> void;
-    auto print() -> void;
-    auto as_vector() -> std::vector<Enemy>&;
-    auto as_string() -> const std::string;
-    auto as_string(std::string sep) -> const std::string;
-    auto at(const char &index) ->  enemy_queue&;
+    auto get_glossary() -> rg::enemy_glossary&;
     auto get_enemy_number() -> int;
+    auto at(const char &index) -> std::deque<Enemy>&;
     auto has(const char &letter) -> bool;
     auto empty() -> bool;
     auto pop(char const& first_letter) -> void;

@@ -45,8 +45,8 @@ add_executable(Funzies src/main.cpp
         src/logic/Point.h
         src/logic/RoundGlossary.cpp
         src/logic/RoundGlossary.h
-        src/entities/enemy/EnemyPriority.cpp
-        src/entities/enemy/EnemyPriority.h
+        src/entities/enemy/EnemyComparator.cpp
+        src/entities/enemy/EnemyComparator.h
         src/entities/enemy/SpawnPosition.h
         src/entities/enemy/EnemyState.h
         src/entities/enemy/EnemyState.cpp

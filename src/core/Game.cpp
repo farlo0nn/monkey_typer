@@ -84,9 +84,11 @@ auto Game::run() -> void
         auto deltaTime = clock.restart().asSeconds();
 
 
-        for (auto& enemy : m_typer.glossary.as_vector()) {
-            enemy.update(m_round_number, deltaTime);
-            m_window.draw(enemy);
+        for (auto& [_, queue] : m_typer.glossary.get_glossary()) {
+            for (auto& enemy : queue ) {
+                enemy.update(m_round_number, deltaTime);
+                m_window.draw(enemy);
+            }
         }
 
         if (m_typer.glossary.empty() && m_spawner.empty()) {
