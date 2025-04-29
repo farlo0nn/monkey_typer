@@ -2,30 +2,28 @@
 #include <vector>
 #include <unordered_map>
 #include <queue>
-#include "Word.h"
-#include "WordPriority.h"
-typedef std::priority_queue<Word, std::vector<Word>, WordPriority> words_queue;
+#include "../entities/enemy/Enemy.h"
 
+namespace rg {
+    typedef std::unordered_map<char, std::deque<Enemy>> enemy_glossary;
+}
 
 class RoundGlossary {
-    std::unordered_map<char, words_queue> _glossary;
-    std::vector<Word> _words;
-    int _words_number = int();
+    rg::enemy_glossary _glossary;
+    int _enemy_number = int();
 
-    public:
-    RoundGlossary(const std::vector<Word> &words);
-    RoundGlossary(Word word);
+public:
+    RoundGlossary(std::vector<Enemy> &enemy);
+    RoundGlossary(Enemy enemy);
     RoundGlossary();
 
-    auto add(std::vector<Word> words) -> void;
-    auto add(Word word) -> void;
-    auto print() -> void;
-    auto as_vector() -> std::vector<Word>&;
-    auto as_string() -> const std::string;
-    auto as_string(std::string sep) -> const std::string;
-    auto at(const int &index) ->  words_queue&;
-    auto get_words_number() -> int;
+    auto add(const std::vector<Enemy>& enemies) -> void;
+    auto add(const Enemy& enemy) -> void;
+    auto get_glossary() -> rg::enemy_glossary&;
+    auto get_enemy_number() const -> int;
+    auto at(const char &index) -> std::deque<Enemy>&;
     auto has(const char &letter) -> bool;
     auto empty() -> bool;
     auto pop(char const& first_letter) -> void;
+    auto get_closest_enemy_by_letter(const char &letter) -> Enemy*;
 };

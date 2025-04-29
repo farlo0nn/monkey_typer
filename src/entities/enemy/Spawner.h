@@ -10,13 +10,14 @@ class Spawner {
 public:
     Spawner(float spawnDelay, int perWave);
 
-    void enqueue(const Enemy& enemy);
-    void update();
-    const std::vector<Enemy>& getActiveEnemies() const;
+    auto enqueue(const Enemy& enemy) -> void;
+    auto update() -> std::vector<Enemy>;
+    auto empty() -> bool;
+    // void add(const Enemy& enemy);
+    // void add(const std::vector<Enemy>& enemies);
 
 private:
     std::queue<Enemy> spawnQueue;
-    std::vector<Enemy> activeEnemies;
     sf::Clock spawnClock;
     float spawnDelaySeconds;
     int spawnPerWave;

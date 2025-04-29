@@ -1,83 +1,59 @@
 #include "RoundGlossary.h"
 #include <iostream>
+#include <algorithm>
+
+#include "../entities/enemy/EnemyComparator.h"
 
 
-RoundGlossary::RoundGlossary(const std::vector<Word> &words) {
-    add(words);
+RoundGlossary::RoundGlossary(std::vector<Enemy> &enemies) {
+    add(enemies);
 }
-RoundGlossary::RoundGlossary(Word word) {
-    add(word);
+RoundGlossary::RoundGlossary(Enemy enemy) {
+    add(enemy);
 }
 RoundGlossary::RoundGlossary() {}
 
 
-auto RoundGlossary::add(std::vector<Word> words) -> void {
-
-    for (const auto& word : words) {
-        this->add(word);
+auto RoundGlossary::add(const std::vector<Enemy>& enemies) -> void {
+    for (auto& enemy : enemies) {
+        this->add(enemy);
     }
 }
-auto RoundGlossary::add(Word word) -> void {
-    this->_glossary[word.first_letter].emplace(word);
-    this->_words_number += 1;
-    this->_words.push_back(word);
-}
+auto RoundGlossary::add(const Enemy& enemy) -> void {
+    this->_glossary[enemy.get_word().first_letter].emplace_back(enemy);
+    this->_enemy_number += 1;}
 
-
-auto RoundGlossary::print() -> void {
-    for (auto const& [first_letter, queue] : _glossary){
-        std::cout << "\"" << first_letter << "\"" << " { ";
-
-        auto copy = queue;
-        while (!copy.empty()) {
-            std::cout << copy.top().value << ", ";
-            copy.pop();
-        }
-
-        std::cout << "}\n";
-    }
-}
-
-auto RoundGlossary::at(const int &index) -> words_queue & {
+auto RoundGlossary::at(const char &index) -> std::deque<Enemy>& {
     return this->_glossary.at(index);
 }
 
-auto RoundGlossary::as_vector() -> std::vector<Word>& {
-    return _words;
-}
-
-auto RoundGlossary::as_string() -> const std::string {
-    auto res = std::string();
-    for (auto const& word : _words) {
-        res.append(word.value);
-        res.append(" ");
-    }
-    return res;
-}
-
-auto RoundGlossary::as_string(std::string sep) -> const std::string {
-    auto res = std::string();
-    for (auto const& word : _words) {
-        res.append(word.value);
-        res.append(sep);
-    }
-    return res;
-}
-
-auto RoundGlossary::get_words_number() -> int {
-    return this->_words_number;
+auto RoundGlossary::get_enemy_number() const -> int {
+    return this->_enemy_number;
 }
 
 auto RoundGlossary::has(const char &letter) -> bool {
-    return _glossary.find(letter) != _glossary.end();
+    return (_glossary.find(letter) != _glossary.end()) && !_glossary[letter].empty();
 }
 
 auto RoundGlossary::pop(char const& first_letter) -> void {
-    _words_number--;
-    return _glossary[first_letter].pop();
+    _enemy_number--;
+    return _glossary[first_letter].pop_front();
 }
 
 auto RoundGlossary::empty() -> bool {
-    return _words_number == 0;
+    return this->_enemy_number == 0;
 }
 
+auto RoundGlossary::get_closest_enemy_by_letter(const char &letter) -> Enemy* {
+    if (this->has(letter)) {
+        auto& enemies = at(letter);
+        std::ranges::sort(enemies, EnemyComparator());
+        return &enemies.front();
+    }
+
+    return nullptr;
+}
+
+auto RoundGlossary::get_glossary() -> rg::enemy_glossary & {
+    return _glossary;
+}
