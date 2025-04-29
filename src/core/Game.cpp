@@ -9,13 +9,16 @@
 #include "fmt/format.h"
 
 Game::Game()
-:   m_window{sf::VideoMode(WINDOW_SIZE), "MonkeyTyper", sf::Style::Titlebar | sf::Style::Close},
-    m_font{FONT_PATH},
-    m_logText{m_font, "", 20},
-    m_instructions{m_font, "Press Enter to change handler type", 24},
-    m_spawner(1.5, 3),
-    m_round_number(1),
-    m_enemy_texture("assets/textures/img.png", false, sf::IntRect({10, 10}, {32, 32}))
+    : m_window{sf::VideoMode(WINDOW_SIZE), "MonkeyTyper", sf::Style::Titlebar | sf::Style::Close},
+      m_font{FONT_PATH},
+      m_logText{m_font, "", 20},
+      m_instructions{m_font, "Press Enter to change handler type", 24},
+      m_spawner(2.5, 3),
+      m_round_number(1),
+      m_fontsize(WORD_FONTSIZE),
+      m_enemy_texture("assets/textures/img.png", false, sf::IntRect({10, 10}, {32, 32})),
+      m_background_texture("assets/background/background_new.png"),
+      m_background(m_background_texture)
 {
     m_window.setFramerateLimit(60);
     m_window.setVerticalSyncEnabled(true);
@@ -34,7 +37,8 @@ auto Game::config_round() -> void {
                 position,
                 word,
                 m_enemy_texture,
-                m_font
+                m_font,
+                m_fontsize
             )
         );
     }
@@ -82,6 +86,10 @@ auto Game::run() -> void
         m_window.clear();
 
         auto deltaTime = clock.restart().asSeconds();
+
+
+        // m_window.draw(m_background);
+
 
 
         for (auto& [_, queue] : m_typer.glossary.get_glossary()) {

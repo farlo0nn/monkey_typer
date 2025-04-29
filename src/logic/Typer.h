@@ -5,7 +5,7 @@ class Typer {
     auto set_active_enemy(const char& letter) -> void;
 public:
     RoundGlossary glossary;
-    std::optional<Enemy> active_enemy;
+    Enemy* active_enemy = nullptr;
     Typer();
 
     auto type(const char& letter) -> void;

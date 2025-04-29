@@ -57,6 +57,8 @@ add_executable(Funzies src/main.cpp
         src/Constants.cpp
         src/logic/Typer.cpp
         src/logic/Typer.h
+        src/entities/enemy/HighlighedLabel.cpp
+        src/entities/enemy/HighlighedLabel.h
 )
 
 target_link_libraries(Funzies PRIVATE SFML::Graphics fmt)
