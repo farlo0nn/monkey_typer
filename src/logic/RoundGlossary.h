@@ -3,7 +3,6 @@
 #include <unordered_map>
 #include <queue>
 #include "../entities/enemy/Enemy.h"
-#include "../entities/enemy/EnemyPriority.h"
 
 namespace rg {
     typedef std::unordered_map<char, std::deque<Enemy>> enemy_glossary;

@@ -3,10 +3,10 @@
 #include "../logic/GeneralGlossary.h"
 #include <iostream>
 #include <random>
-
+#include "../Constants.h"
 #include "../entities/enemy/EnemyState.h"
-#include "../entities/enemy/SpawnPosition.h"
-#include "fmt/format.h"
+#include "../entities/enemy/EnemySpawnPositions.h"
+
 
 Game::Game()
     : m_window{sf::VideoMode(WINDOW_SIZE), "MonkeyTyper", sf::Style::Titlebar | sf::Style::Close},
@@ -18,20 +18,40 @@ Game::Game()
       m_fontsize(WORD_FONTSIZE),
       m_enemy_texture("assets/textures/img.png", false, sf::IntRect({10, 10}, {32, 32})),
       m_background_texture("assets/background/background_new.png"),
-      m_background(m_background_texture)
-{
+      m_background(m_background_texture) {
     m_window.setFramerateLimit(60);
     m_window.setVerticalSyncEnabled(true);
     m_logText.setFillColor(sf::Color::White);
     m_instructions.setFillColor(sf::Color::White);
     m_instructions.setStyle(sf::Text::Bold);
     m_general_glossary.load(WORDS_PATH);
+    // m_background.setTextureRect(sf::IntRect({100, 100}, {WINDOW_SIZE.x, WINDOW_SIZE.y}));
+    sf::Vector2u windowSize = m_window.getSize();
+    sf::FloatRect rect = m_background.getLocalBounds();
+
+    float scaleX = static_cast<float>(windowSize.x) / rect.size.x;
+    float scaleY = static_cast<float>(windowSize.y) / rect.size.y;
+
+    // Choose the larger scale to fully cover the window
+    float scale = std::max(scaleX, scaleY);
+
+    m_background.setScale({scale, scale});
+
+    sf::FloatRect spriteBounds = m_background.getGlobalBounds();
+
+    // Move so that the sprite is centered (and cropped by window automatically)
+    float offsetX = (spriteBounds.size.x - windowSize.x) / 2.f;
+    float offsetY = (spriteBounds.size.y - windowSize.y) / 2.f;
+
+    m_background.setPosition({-offsetX, -offsetY});
+
+
     config_round();
 }
 
 auto Game::config_round() -> void {
     for (auto word : m_general_glossary.get_random_words(m_round_number*5 + 5)) {
-        auto position = ENEMY_SPAWN_POSITIONS.at(SpawnPositions::get_random_spawn_position());
+        auto position = ENEMY_SPAWN_POSITIONS.at(sp::get_random_spawn_position());
         m_spawner.enqueue(
             Enemy(
                 position,
@@ -104,7 +124,7 @@ auto Game::run() -> void
         auto deltaTime = clock.restart().asSeconds();
 
 
-        // m_window.draw(m_background);
+        m_window.draw(m_background);
 
         draw_enemies(deltaTime);
 

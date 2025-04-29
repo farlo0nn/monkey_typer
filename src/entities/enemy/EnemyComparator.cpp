@@ -1,5 +1,5 @@
 #include "EnemyComparator.h"
-#include "../../Constants.cpp"
+#include "../../Constants.h"
 #include <cmath>
 
 bool EnemyComparator::operator()(const Enemy& a, const Enemy& b) const {

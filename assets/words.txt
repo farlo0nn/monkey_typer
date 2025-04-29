@@ -748,7 +748,6 @@ natural
 view
 sense
 capital
-won’t
 chair
 danger
 fruit
@@ -998,3 +997,4 @@ anger
 claim
 continent
 pneumonoultramicroscopicsilicovolcanoconiosis
+allocate

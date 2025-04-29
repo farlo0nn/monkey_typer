@@ -47,18 +47,20 @@ add_executable(Funzies src/main.cpp
         src/logic/RoundGlossary.h
         src/entities/enemy/EnemyComparator.cpp
         src/entities/enemy/EnemyComparator.h
-        src/entities/enemy/SpawnPosition.h
+        src/entities/enemy/EnemySpawnPositions.h
         src/entities/enemy/EnemyState.h
         src/entities/enemy/EnemyState.cpp
         src/entities/enemy/Enemy.cpp
         src/entities/enemy/Spawner.cpp
         src/entities/enemy/Spawner.h
-        src/entities/enemy/SpawnPosition.cpp
-        src/Constants.cpp
+        src/entities/enemy/EnemySpawnPositions.cpp
+        src/Constants.h
         src/logic/Typer.cpp
         src/logic/Typer.h
         src/entities/enemy/HighlighedLabel.cpp
         src/entities/enemy/HighlighedLabel.h
+        src/entities/enemy/SpawnPosition.h
+        src/entities/enemy/SpawnPosition.cpp
 )
 
 target_link_libraries(Funzies PRIVATE SFML::Graphics fmt)

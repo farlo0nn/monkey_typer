@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <SFML/Graphics.hpp>
-#include "../../Constants.cpp"
+#include "../../Constants.h"
 
 Enemy::Enemy(EnemyState state, const Word& word, const sf::Texture& texture, const sf::Font& font, unsigned int fontsize)
     : sprite(texture), state(state), word(word), label(font, fontsize), typing_index(0)
@@ -10,7 +10,7 @@ Enemy::Enemy(EnemyState state, const Word& word, const sf::Texture& texture, con
     sprite.setTexture(texture);
     set_position(state.position);
     label.setString(word.value);
-    label.setColors(sf::Color::White, sf::Color::Red);
+    label.setColors(sf::Color::Green, sf::Color::White);
 }
 
 auto Enemy::update(int round, float deltaTime) -> void {
@@ -19,7 +19,11 @@ auto Enemy::update(int round, float deltaTime) -> void {
         state.direction.x * velocity * deltaTime,
         state.direction.y * velocity * deltaTime
     };
+    if (state.has_reached_point()) {
+        state.advance_to_next_waypoint();
+    }
     sprite.move(move_to);
+    state.position = sprite.getPosition();
     update_label_position();
 }
 
