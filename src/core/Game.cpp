@@ -71,6 +71,22 @@ auto Game::handle(const T&) -> void {
     // m_log.push_back("Unprocessed event type");
 }
 
+auto Game::draw_enemies(float deltaTime) -> void {
+    for (auto& [_, queue] : m_typer.glossary.get_glossary()) {
+        for (auto& enemy : queue ) {
+            if (!enemy.is_active()) {
+                enemy.update(m_round_number, deltaTime);
+                m_window.draw(enemy);
+            }
+        }
+    }
+
+    if (m_typer.active_enemy) {
+        m_typer.active_enemy->update(m_round_number, deltaTime);
+        m_window.draw(*m_typer.active_enemy);
+    }
+}
+
 auto Game::run() -> void
 {
     auto clock = sf::Clock();
@@ -90,14 +106,7 @@ auto Game::run() -> void
 
         // m_window.draw(m_background);
 
-
-
-        for (auto& [_, queue] : m_typer.glossary.get_glossary()) {
-            for (auto& enemy : queue ) {
-                enemy.update(m_round_number, deltaTime);
-                m_window.draw(enemy);
-            }
-        }
+        draw_enemies(deltaTime);
 
         if (m_typer.glossary.empty() && m_spawner.empty()) {
             m_window.draw(m_instructions);

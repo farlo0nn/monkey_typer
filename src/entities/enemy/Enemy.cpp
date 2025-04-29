@@ -81,6 +81,7 @@ auto Enemy::is_word_typed() -> bool {
 
 auto Enemy::reset_typing() -> void {
     typing_index = 0;
+    label.reset();
     set_active(false);
 }
 

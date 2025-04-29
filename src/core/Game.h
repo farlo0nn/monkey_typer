@@ -21,6 +21,7 @@ private:
     // void handle(const sf::Event::MouseButtonPressed&);
     auto handle(const sf::Event::TextEntered& textEntered) -> void;
     // void handle(const sf::Event::TouchBegan& touchBegan);
+    auto draw_enemies(float deltaTime) -> void;
 
     template <typename T>
     auto handle(const T&) -> void;

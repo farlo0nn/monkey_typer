@@ -32,7 +32,7 @@ auto RoundGlossary::get_enemy_number() const -> int {
 }
 
 auto RoundGlossary::has(const char &letter) -> bool {
-    return _glossary.find(letter) != _glossary.end();
+    return (_glossary.find(letter) != _glossary.end()) && !_glossary[letter].empty();
 }
 
 auto RoundGlossary::pop(char const& first_letter) -> void {

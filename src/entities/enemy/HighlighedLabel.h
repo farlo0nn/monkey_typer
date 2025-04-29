@@ -13,7 +13,7 @@ public:
     void setTypingIndex(size_t index);
     void setCharacterSize(unsigned int size);
     void setColors(sf::Color typed, sf::Color untyped);
-
+    auto reset() -> void;
     auto getGlobalBounds() const -> sf::FloatRect;
     auto getLocalBounds() const -> sf::FloatRect;
 
@@ -26,6 +26,5 @@ private:
     sf::Color untypedColor = sf::Color::White;
 
     void updateHighlight();
-
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };

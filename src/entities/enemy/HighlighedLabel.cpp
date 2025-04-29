@@ -80,6 +80,10 @@ auto HighlighedLabel::getLocalBounds() const -> sf::FloatRect {
     );
 }
 
+auto HighlighedLabel::reset() -> void {
+    typingIndex = 0;
+}
+
 void HighlighedLabel::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     target.draw(typedText, states);
     target.draw(untypedText, states);
