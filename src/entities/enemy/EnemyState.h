@@ -9,7 +9,6 @@
 
 class EnemyState {
     auto add_waypoint(sf::Vector2f point) -> void;
-    auto update_path() -> void;
     auto get_direction(sf::Vector2f c1, sf::Vector2f c2)->sf::Vector2f;
 public:
     sf::Vector2f position;

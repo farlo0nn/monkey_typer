@@ -5,15 +5,17 @@
 #include "HighlighedLabel.h"
 #include <SFML/Graphics.hpp>
 
+#include "AnimatedSprite.h"
+
 class Enemy : public sf::Drawable {
 public:
 
-    Enemy(EnemyState state, const Word &word, const sf::Texture &texture, const sf::Font &font, unsigned int fontsize);
+    Enemy(const EnemyState &state, const AnimatedSprite &sprite,  const Word& word, const sf::Font& font, unsigned int fontsize);
 
     auto update(int round, float deltaTime) -> void;
 
     auto get_enemy_state() const -> EnemyState;
-    auto get_sprite() const -> const sf::Sprite&;
+    auto get_sprite() const -> const AnimatedSprite&;
 
     auto set_position(const sf::Vector2f& pos) -> void;
     auto get_displayed_word() const -> const sf::Text&;
@@ -25,11 +27,12 @@ public:
     auto is_word_typed() -> bool;
     auto set_active(bool active) -> void;
     auto reset_typing() -> void;
+    auto collides(sf::Sprite& other) -> bool;
     auto operator==(const Enemy& other) const -> bool;
 
 private:
     EnemyState state;
-    sf::Sprite sprite;
+    AnimatedSprite sprite;
     sf::Texture texture;
     HighlighedLabel label;
     Word word;

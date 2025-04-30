@@ -1,6 +1,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+
+#include "GameState.h"
 #include "../entities/enemy/Spawner.h"
 #include "../logic/GeneralGlossary.h"
 #include "../logic/RoundGlossary.h"
@@ -26,8 +28,9 @@ private:
     template <typename T>
     auto handle(const T&) -> void;
 
+    auto config_background() -> void;
     auto config_round() -> void;
-    auto drawLog() -> void;
+    auto config_castle(const sf::Texture& texture) -> void;
 
     // Member variables
     sf::RenderWindow m_window;
@@ -36,6 +39,9 @@ private:
     sf::Texture m_enemy_texture;
     sf::Texture m_background_texture;
     sf::Sprite m_background;
+    sf::Texture m_castle_texture;
+    sf::Texture m_destroyed_castle_texture;
+    sf::Sprite m_castle;
     sf::Text m_logText;
     sf::Text m_instructions;
     std::string m_log;
@@ -43,4 +49,5 @@ private:
     Spawner m_spawner;
     int m_round_number;
     Typer m_typer;
+    GameState m_gamestate;
 };

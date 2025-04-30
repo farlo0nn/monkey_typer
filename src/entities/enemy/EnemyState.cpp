@@ -62,12 +62,6 @@ auto EnemyState::add_waypoint(sf::Vector2f point) -> void {
     path.push(point);
 }
 
-auto EnemyState::update_path() -> void {
-    if (!path.empty()) {
-        direction = get_direction(position, path.front());
-    }
-}
-
 auto EnemyState::advance_to_next_waypoint() -> void {
     if (!path.empty()) {
         path.pop();

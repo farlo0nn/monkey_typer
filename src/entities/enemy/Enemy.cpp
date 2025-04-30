@@ -4,10 +4,9 @@
 #include <SFML/Graphics.hpp>
 #include "../../Constants.h"
 
-Enemy::Enemy(EnemyState state, const Word& word, const sf::Texture& texture, const sf::Font& font, unsigned int fontsize)
-    : sprite(texture), state(state), word(word), label(font, fontsize), typing_index(0)
+Enemy::Enemy(const EnemyState &state, const AnimatedSprite &sprite,  const Word& word, const sf::Font& font, unsigned int fontsize)
+    :  sprite(sprite), state(state), word(word), label(font, fontsize), typing_index(0)
 {
-    sprite.setTexture(texture);
     set_position(state.position);
     label.setString(word.value);
     label.setColors(sf::Color::Green, sf::Color::White);
@@ -23,6 +22,7 @@ auto Enemy::update(int round, float deltaTime) -> void {
         state.advance_to_next_waypoint();
     }
     sprite.move(move_to);
+    sprite.update(deltaTime);
     state.position = sprite.getPosition();
     update_label_position();
 }
@@ -36,7 +36,7 @@ auto Enemy::update_label_position() -> void {
     });
 }
 
-auto Enemy::get_sprite() const -> const sf::Sprite& {
+auto Enemy::get_sprite() const -> const AnimatedSprite& {
     return sprite;
 }
 
@@ -92,3 +92,10 @@ auto Enemy::reset_typing() -> void {
 auto Enemy::operator==(const Enemy& other) const -> bool {
     return this->word.value == other.word.value;
 };
+
+auto Enemy::collides(sf::Sprite& other) -> bool {
+    if (other.getGlobalBounds().contains(get_sprite().getPosition())) {
+        return true;
+    }
+    return false;
+}
