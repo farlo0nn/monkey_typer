@@ -1,10 +1,7 @@
 #pragma once
 
-#include <queue>
 #include <stack>
-
 #include "SpawnPosition.h"
-
 #include "SFML/System/Vector2.hpp"
 
 class EnemyState {
@@ -13,7 +10,7 @@ class EnemyState {
 public:
     sf::Vector2f position;
     sf::Vector2f direction;
-    std::queue<sf::Vector2<float>> path;
+    std::deque<sf::Vector2<float>> path;
     EnemyState(SpawnPosition position);
 
     auto advance_to_next_waypoint() -> void;

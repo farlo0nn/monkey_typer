@@ -60,9 +60,9 @@ add_executable(Funzies src/main.cpp
         src/entities/enemy/HighlighedLabel.cpp
         src/entities/enemy/HighlighedLabel.h
         src/entities/enemy/SpawnPosition.h
-        src/entities/enemy/SpawnPosition.cpp
         src/entities/enemy/AnimatedSprite.cpp
         src/entities/enemy/AnimatedSprite.h
+        src/utils.cpp
 )
 
 target_link_libraries(Funzies PRIVATE SFML::Graphics fmt)

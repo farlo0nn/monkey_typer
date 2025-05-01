@@ -4,6 +4,7 @@
 
 #include "../logic/RoundGlossary.h"
 #include "../logic/GeneralGlossary.h"
+#include "../utils.cpp"
 #include <random>
 
 #include "../Constants.h"
@@ -75,8 +76,8 @@ auto Game::config_background() -> void {
 
 auto Game::config_round() -> void {
     for (auto word : m_general_glossary.get_random_words(m_round_number*5 + 5)) {
-        auto position = ENEMY_SPAWN_POSITIONS.at(sp::get_random_spawn_position());
-        auto animated_sprite = AnimatedSprite(m_enemy_texture, 14, 0.1);
+        auto position = ENEMY_SPAWN_POSITIONS.at(utils::get_random_enum_option<SpawnPosition>());
+        auto animated_sprite = getAnimatedSprite(as::AnimatedSprites::RADISH);
         m_spawner.enqueue(
             Enemy(
                 position,

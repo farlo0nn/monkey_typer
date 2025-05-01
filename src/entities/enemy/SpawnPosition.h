@@ -9,7 +9,3 @@ enum class SpawnPosition {
     MIDDLE_RIGHT,
     COUNT
 };
-
-namespace sp {
-    auto get_random_spawn_position() -> SpawnPosition;
-}

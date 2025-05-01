@@ -6,7 +6,7 @@
 
 EnemyState::EnemyState(SpawnPosition position) {
 
-    this->path = std::queue<sf::Vector2f>();
+    this->path = std::deque<sf::Vector2f>();
 
     switch (position) {
         case SpawnPosition::UPPER_LEFT:
@@ -59,12 +59,12 @@ auto EnemyState::get_direction(sf::Vector2f c1, sf::Vector2f c2) -> sf::Vector2f
 }
 
 auto EnemyState::add_waypoint(sf::Vector2f point) -> void {
-    path.push(point);
+    path.push_back(point);
 }
 
 auto EnemyState::advance_to_next_waypoint() -> void {
     if (!path.empty()) {
-        path.pop();
+        path.pop_front();
         if (!path.empty())
             direction = get_direction(position, path.front());
         else
