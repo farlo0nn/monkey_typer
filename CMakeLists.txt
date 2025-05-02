@@ -63,6 +63,7 @@ add_executable(Funzies src/main.cpp
         src/entities/enemy/AnimatedSprite.cpp
         src/entities/enemy/AnimatedSprite.h
         src/utils.cpp
+        src/entities/enemy/Directions.h
 )
 
 target_link_libraries(Funzies PRIVATE SFML::Graphics fmt)

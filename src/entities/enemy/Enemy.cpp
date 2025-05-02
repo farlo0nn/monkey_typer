@@ -8,6 +8,8 @@ Enemy::Enemy(const EnemyState &state, const AnimatedSprite &sprite,  const Word&
     :  sprite(sprite), state(state), word(word), label(font, fontsize), typing_index(0)
 {
     set_position(state.position);
+
+
     label.setString(word.value);
     label.setColors(sf::Color::Green, sf::Color::White);
 }
@@ -21,6 +23,7 @@ auto Enemy::update(int round, float deltaTime) -> void {
     if (state.has_reached_point()) {
         state.advance_to_next_waypoint();
     }
+
     sprite.move(move_to);
     sprite.update(deltaTime);
     state.position = sprite.getPosition();

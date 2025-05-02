@@ -1,4 +1,5 @@
 #pragma once
+#include "Directions.h"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Texture.hpp"
 
@@ -9,10 +10,12 @@ class AnimatedSprite : public sf::Sprite{
     float spriteFrameTime;
     int spriteCurrentFrame;
     float spriteElapsedTime;
+    Directions texture_direction;
 public:
     AnimatedSprite(sf::Texture& texture, int frameCount, float frameTime);
     AnimatedSprite(sf::Texture& texture, int frameCount);
     auto update(float deltaTime) -> void;
+    auto setTextureDirection(Directions direction) -> void;
 };
 
 namespace as {
@@ -24,7 +27,6 @@ namespace as {
         BUNNY,
         CHICKEN,
         DUCK,
-        GHOST,
         MUSHROOM,
         PIG,
         RADISH,

@@ -40,6 +40,7 @@ private:
     bool active_target;
 
     auto update_label_position() -> void;
+    auto flipHorizontally() -> void;
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
         target.draw(sprite, states);

@@ -1,16 +1,16 @@
 #include "./EnemyState.h"
 
 #include <queue>
-
 #include "../../Constants.h"
 
-EnemyState::EnemyState(SpawnPosition position) {
+EnemyState::EnemyState(SpawnPosition position, Directions texture_direction) {
 
+    this->texture_direction = texture_direction;
     this->path = std::deque<sf::Vector2f>();
 
     switch (position) {
         case SpawnPosition::UPPER_LEFT:
-            this->position = {2.5*60, 0.f};
+            this->position = {2.4*60, 0.f};
             add_waypoint({2.5*60.f, 2.1*60.f});
             add_waypoint({8.7*60.f, 2.1*60.f});
             add_waypoint({8.7*60.f, WINDOW_SIZE.y/2});
