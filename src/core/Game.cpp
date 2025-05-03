@@ -27,7 +27,10 @@ Game::Game()
     m_castle_texture("assets/sprites/castle/castle0.png"),
     m_destroyed_castle_texture("assets/sprites/castle/castleDestroyed.png"),
     m_gamestate(GameState::GAME),
-    m_castle(m_castle_texture)
+    m_castle(m_castle_texture),
+    active_settings_button_texture("assets/ui/settings/settings_wheel.png"),
+    inactive_settings_button_texture("assets/ui/settings/settings_wheel_pressed.png"),
+    m_settings_button(active_settings_button_texture, inactive_settings_button_texture)
 {
     m_window.setFramerateLimit(60);
     m_window.setVerticalSyncEnabled(true);
@@ -35,7 +38,10 @@ Game::Game()
     m_instructions.setFillColor(sf::Color::White);
     m_instructions.setStyle(sf::Text::Bold);
     m_general_glossary.load(WORDS_PATH);
-
+    m_settings_button.setPosition({WINDOW_SIZE.x - m_settings_button.getGlobalBounds().size.x - 20, 20});
+    m_settings_button.onClick([=]() {
+        std::cout << "Settings button clicked" << std::endl;
+    });
 
     config_castle(m_castle_texture);
     config_background();
@@ -82,10 +88,14 @@ auto Game::run() -> void
 
         m_window.clear();
         m_window.draw(m_background);
+        m_window.draw(m_settings_button);
+
 
         switch (m_gamestate) {
             case GameState::MENU: {
-
+                if (m_settings_button.isClicked()) {
+                    m_window.draw(m_castle);
+                }
             }; break;
             case GameState::GAME: {
                 m_typer.glossary.add(m_spawner.update());
@@ -114,8 +124,6 @@ auto Game::run() -> void
             }; break;
         }
 
-
-
         m_window.display();
 
 
@@ -128,6 +136,14 @@ auto Game::run() -> void
 
 auto Game::handle(const sf::Event::Closed&) -> void {
     m_window.close();
+}
+
+auto Game::handle(const sf::Event::MouseButtonPressed& mousePressed) -> void {
+    std::cout << m_settings_button.getGlobalBounds().contains(sf::Vector2<float>(mousePressed.position)) << std::endl;
+    if (m_settings_button.getGlobalBounds().contains(sf::Vector2<float>(mousePressed.position))) {
+        m_settings_button.click();
+    }
+
 }
 
 auto Game::handle(const sf::Event::TextEntered& textEntered) -> void {

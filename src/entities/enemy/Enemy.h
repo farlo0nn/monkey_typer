@@ -18,7 +18,6 @@ public:
     auto get_sprite() const -> const AnimatedSprite&;
 
     auto set_position(const sf::Vector2f& pos) -> void;
-    auto get_displayed_word() const -> const sf::Text&;
     auto get_word() const -> const Word&;
     auto get_typing_index() const -> int;
     auto type_next_char() -> void;
@@ -40,7 +39,6 @@ private:
     bool active_target;
 
     auto update_label_position() -> void;
-    auto flipHorizontally() -> void;
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
         target.draw(sprite, states);

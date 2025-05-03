@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "GameState.h"
+#include "../entities/components/Button.h"
 #include "../entities/enemy/Spawner.h"
 #include "../logic/GeneralGlossary.h"
 #include "../logic/RoundGlossary.h"
@@ -20,7 +21,7 @@ private:
     auto  handle(const sf::Event::Closed&) -> void;
     auto handle(const sf::Event::KeyPressed& keyPress) -> void;
     auto handle(const sf::Event::MouseMoved& mouseMoved) -> void;
-    // void handle(const sf::Event::MouseButtonPressed&);
+    void handle(const sf::Event::MouseButtonPressed&);
     auto handle(const sf::Event::TextEntered& textEntered) -> void;
     // void handle(const sf::Event::TouchBegan& touchBegan);
     auto draw_enemies(float deltaTime) -> void;
@@ -50,4 +51,7 @@ private:
     int m_round_number;
     Typer m_typer;
     GameState m_gamestate;
+    sf::Texture active_settings_button_texture;
+    sf::Texture inactive_settings_button_texture;
+    Button m_settings_button;
 };
