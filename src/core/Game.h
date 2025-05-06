@@ -25,6 +25,7 @@ private:
     auto handle(const sf::Event::TextEntered& textEntered) -> void;
     // void handle(const sf::Event::TouchBegan& touchBegan);
     auto draw_enemies(float deltaTime) -> void;
+    auto draw_decorations(float deltaTime) -> void;
 
     template <typename T>
     auto handle(const T&) -> void;
@@ -32,6 +33,7 @@ private:
     auto config_background() -> void;
     auto config_round() -> void;
     auto config_castle(const sf::Texture& texture) -> void;
+    auto config_decorations() -> void;
 
     // Member variables
     sf::RenderWindow m_window;
@@ -53,5 +55,7 @@ private:
     GameState m_gamestate;
     sf::Texture active_settings_button_texture;
     sf::Texture inactive_settings_button_texture;
+    sf::Texture m_tree_texture;
+    std::vector<AnimatedSprite> m_decorations;
     Button m_settings_button;
 };

@@ -19,11 +19,8 @@ auto Button::getGlobalBounds() -> sf::FloatRect {
     return sprite.getGlobalBounds();
 }
 
-
-
-
 auto Button::onClick(Callback cb) -> void {
-    this->callback = std::move(cb);
+    this->callback = cb;
 }
 
 auto Button::click() -> void {

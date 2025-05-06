@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <random>
+#include <utility>
 
 #include "../Constants.h"
 
@@ -30,7 +31,8 @@ Game::Game()
     m_castle(m_castle_texture),
     active_settings_button_texture("assets/ui/settings/settings_wheel.png"),
     inactive_settings_button_texture("assets/ui/settings/settings_wheel_pressed.png"),
-    m_settings_button(active_settings_button_texture, inactive_settings_button_texture)
+    m_settings_button(active_settings_button_texture, inactive_settings_button_texture),
+    m_tree_texture("assets/sprites/decorations/trees.png")
 {
     m_window.setFramerateLimit(60);
     m_window.setVerticalSyncEnabled(true);
@@ -45,7 +47,9 @@ Game::Game()
 
     config_castle(m_castle_texture);
     config_background();
+
     config_round();
+    config_decorations();
 }
 
 
@@ -73,6 +77,14 @@ auto Game::draw_enemies(float deltaTime) -> void {
     }
 
 }
+
+auto Game::draw_decorations(float deltaTime) -> void {
+    for (auto& decoration : m_decorations) {
+        decoration.update(deltaTime);
+        m_window.draw(decoration);
+    }
+}
+
 
 // MAIN RUN FUNCTION
 
@@ -102,11 +114,15 @@ auto Game::run() -> void
 
                 auto deltaTime = clock.restart().asSeconds();
 
+                draw_decorations(deltaTime);
+
                 draw_enemies(deltaTime);
 
                 if (m_typer.glossary.empty() && m_spawner.empty()) {
                     m_gamestate = GameState::BETWEEN_ROUNDS;
                 }
+
+
 
                 m_window.draw(m_castle);
             }; break;
@@ -120,6 +136,9 @@ auto Game::run() -> void
                 config_castle(m_castle_texture);
             }
             case GameState::GAME_OVER: {
+                auto deltaTime = clock.restart().asSeconds();
+
+                draw_decorations(deltaTime);
                 m_window.draw(m_castle);
             }; break;
         }
@@ -147,15 +166,18 @@ auto Game::handle(const sf::Event::MouseButtonPressed& mousePressed) -> void {
 }
 
 auto Game::handle(const sf::Event::TextEntered& textEntered) -> void {
-    uint32_t u = textEntered.unicode;
-    auto c = static_cast<char>(u);
-    m_typer.type(c);
-
+    if (m_gamestate == GameState::GAME) {
+        uint32_t u = textEntered.unicode;
+        auto c = static_cast<char>(u);
+        m_typer.type(c);
+    }
 }
 
 auto Game::handle(const sf::Event::KeyPressed& keyPress) -> void{
-    if (keyPress.code == sf::Keyboard::Key::Escape) {
-        m_typer.reset_word_typing();
+    if (m_gamestate == GameState::GAME) {
+        if (keyPress.code == sf::Keyboard::Key::Escape) {
+            m_typer.reset_word_typing();
+        }
     }
 }
 
@@ -223,4 +245,85 @@ auto Game::config_round() -> void {
             )
         );
     }
+}
+
+auto Game::config_decorations() -> void {
+    auto params = std::vector<std::pair<sf::Vector2f, float>>{
+
+    // UPPER LEFT
+
+    {{100, 150}, 0.7f},
+    {{150, 230}, 0.4f},
+    {{90, 195}, 0.5f},
+
+    {{200, 170}, 0.7f},
+    {{190, 215}, 0.5f},
+    {{250, 160}, 0.7f},
+    {{300, 240}, 0.4f},
+    {{260, 205}, 0.5f},
+    {{250, 250}, 0.4f},
+
+    // UPPER RIGHT
+
+    {{960, 70}, 0.7f},
+    {{925, 75}, 0.6f},
+    {{740, 30}, 0.7f},
+    {{735, 30}, 0.45f},
+
+
+    {{100, 150}, 0.7f},
+    {{150, 230}, 0.4f},
+    {{90, 195}, 0.5f},
+
+    // MIDDLE RIGHT
+
+    {{700, 370}, 0.7f},
+    {{590, 415}, 0.5f},
+    {{650, 360}, 0.7f},
+    {{700, 440}, 0.4f},
+    {{660, 405}, 0.5f},
+    {{650, 450}, 0.4f},
+
+    {{860, 405}, 0.5f},
+    {{850, 450}, 0.4f},
+
+
+    // MIDDLE MIDDLE
+
+    {{400, 570}, 0.7f},
+    {{290, 615}, 0.5f},
+    {{350, 560}, 0.7f},
+    {{400, 640}, 0.4f},
+    {{360, 605}, 0.5f},
+    {{350, 650}, 0.4f},
+    {{550, 580}, 0.65f},
+
+    {{860, 405}, 0.5f},
+    {{850, 450}, 0.4f},
+
+
+    // MIDDLE LEFT
+
+    {{390, 0}, 0.7f},
+    {{280, 45}, 0.5f},
+    {{440, 0}, 0.7f},
+    {{490, 40}, 0.4f},
+    {{80, 45}, 0.5f},
+    {{340, 50}, 0.4f},
+    {{540, 30}, 0.65f},
+
+    // LOWER LEFT
+
+    {{70, 400}, 0.65f},
+    {{60, 430}, 0.5f},
+
+    };
+    for (auto& param : params) {
+        auto decoration = AnimatedSprite(m_tree_texture, 6, 0.16f);
+        decoration.setPosition(param.first);
+        decoration.scale({param.second, param.second});
+
+        m_decorations.push_back(decoration);
+    }
+
 }
