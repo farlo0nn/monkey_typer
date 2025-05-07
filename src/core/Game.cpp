@@ -16,24 +16,28 @@
 
 Game::Game()
     : m_window{sf::VideoMode(WINDOW_SIZE), "MonkeyTyper", sf::Style::Titlebar | sf::Style::Close},
-    m_font{FONT_PATH},
-    m_logText{m_font, "", 20},
-    m_instructions{m_font, "Press Enter to change handler type", 24},
-    m_spawner(5, 3),
-    m_round_number(1),
-    m_fontsize(WORD_FONTSIZE),
-    m_enemy_texture("assets/sprites/enemies/chicken.png"),
-    m_background_texture("assets/background/background_new.png"),
-    m_background(m_background_texture),
-    m_castle_texture("assets/sprites/castle/castle0.png"),
-    m_destroyed_castle_texture("assets/sprites/castle/castleDestroyed.png"),
-    m_gamestate(GameState::GAME),
-    m_castle(m_castle_texture),
-    active_settings_button_texture("assets/ui/settings/settings_wheel.png"),
-    inactive_settings_button_texture("assets/ui/settings/settings_wheel_pressed.png"),
-    m_settings_button(active_settings_button_texture, inactive_settings_button_texture),
-    m_tree_texture("assets/sprites/decorations/trees.png")
-{
+      m_mainMenu(
+      [&](){ this->m_gamestate = GameState::GAME;},
+      []() { std::cout << "MENU" << std::endl; },
+      [&]() { this->m_window.close(); }
+      ),
+      m_font{FONT_PATH},
+      m_logText{m_font, "", 20},
+      m_instructions{m_font, "Press Enter to change handler type", 24},
+      m_spawner(5, 3),
+      m_round_number(1),
+      m_fontsize(WORD_FONTSIZE),
+      m_enemy_texture("assets/sprites/enemies/chicken.png"),
+      m_background_texture("assets/background/background_new.png"),
+      m_background(m_background_texture),
+      m_castle_texture("assets/sprites/castle/castle0.png"),
+      m_destroyed_castle_texture("assets/sprites/castle/castleDestroyed.png"),
+      m_gamestate(GameState::MENU),
+      m_castle(m_castle_texture),
+      active_settings_button_texture("assets/ui/settings/settings_wheel.png"),
+      inactive_settings_button_texture("assets/ui/settings/settings_wheel_pressed.png"),
+      m_settings_button(active_settings_button_texture, inactive_settings_button_texture),
+      m_tree_texture("assets/sprites/decorations/trees.png") {
     m_window.setFramerateLimit(60);
     m_window.setVerticalSyncEnabled(true);
     m_logText.setFillColor(sf::Color::White);
@@ -41,23 +45,23 @@ Game::Game()
     m_instructions.setStyle(sf::Text::Bold);
     m_general_glossary.load(WORDS_PATH);
     m_settings_button.setPosition({WINDOW_SIZE.x - m_settings_button.getGlobalBounds().size.x - 20, 20});
-    m_settings_button.onClick([=]() {
-        std::cout << "Settings button clicked" << std::endl;
-    });
 
     config_castle(m_castle_texture);
     config_background();
 
+    config_main_menu();
     config_round();
     config_decorations();
 }
 
 
-auto Game::draw_enemies(float deltaTime) -> void {
+auto Game::draw_enemies(std::optional<float> deltaTime) -> void {
     for (auto& [_, queue] : m_typer.glossary.get_glossary()) {
         for (auto& enemy : queue ) {
             if (!enemy.is_active()) {
-                enemy.update(m_round_number, deltaTime);
+                if (deltaTime) {
+                    enemy.update(m_round_number, *deltaTime);
+                }
                 m_window.draw(enemy);
             }
             if (enemy.collides(m_castle)) {
@@ -68,7 +72,9 @@ auto Game::draw_enemies(float deltaTime) -> void {
     }
 
     if (m_typer.active_enemy) {
-        m_typer.active_enemy->update(m_round_number, deltaTime);
+        if (deltaTime) {
+            m_typer.active_enemy->update(m_round_number, *deltaTime);
+        }
         m_window.draw(*m_typer.active_enemy);
         if (m_typer.active_enemy->collides(m_castle)) {
             m_gamestate = GameState::GAME_OVER;
@@ -78,9 +84,11 @@ auto Game::draw_enemies(float deltaTime) -> void {
 
 }
 
-auto Game::draw_decorations(float deltaTime) -> void {
+auto Game::draw_decorations(std::optional<float> deltaTime) -> void {
     for (auto& decoration : m_decorations) {
-        decoration.update(deltaTime);
+        if (deltaTime) {
+            decoration.update(*deltaTime);
+        }
         m_window.draw(decoration);
     }
 }
@@ -105,14 +113,22 @@ auto Game::run() -> void
 
         switch (m_gamestate) {
             case GameState::MENU: {
-                if (m_settings_button.isClicked()) {
-                    m_window.draw(m_castle);
-                }
+
+                m_window.draw(m_castle);
+
+                draw_decorations(std::nullopt);
+                draw_enemies(std::nullopt);
+
+                m_window.draw(m_mainMenu);
+
             }; break;
             case GameState::GAME: {
+
                 m_typer.glossary.add(m_spawner.update());
 
                 auto deltaTime = clock.restart().asSeconds();
+
+                m_window.draw(m_castle);
 
                 draw_decorations(deltaTime);
 
@@ -124,7 +140,7 @@ auto Game::run() -> void
 
 
 
-                m_window.draw(m_castle);
+
             }; break;
             case GameState::PAUSE: {
             }; break;
@@ -162,6 +178,13 @@ auto Game::handle(const sf::Event::MouseButtonPressed& mousePressed) -> void {
     if (m_settings_button.getGlobalBounds().contains(sf::Vector2<float>(mousePressed.position))) {
         m_settings_button.click();
     }
+    if (m_gamestate == GameState::MENU) {
+        for (auto& button : m_mainMenu.get_buttons()) {
+            if (button.getGlobalBounds().contains(sf::Vector2<float>(mousePressed.position))) {
+                button.click();
+            }
+        }
+    }
 
 }
 
@@ -176,7 +199,7 @@ auto Game::handle(const sf::Event::TextEntered& textEntered) -> void {
 auto Game::handle(const sf::Event::KeyPressed& keyPress) -> void{
     if (m_gamestate == GameState::GAME) {
         if (keyPress.code == sf::Keyboard::Key::Escape) {
-            m_typer.reset_word_typing();
+            m_gamestate = GameState::MENU;
         }
     }
 }
@@ -326,4 +349,9 @@ auto Game::config_decorations() -> void {
         m_decorations.push_back(decoration);
     }
 
+}
+
+
+auto Game::config_main_menu() -> void {
+    auto buttons = m_mainMenu.get_buttons();
 }

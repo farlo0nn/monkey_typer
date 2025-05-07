@@ -96,7 +96,7 @@ auto Enemy::operator==(const Enemy& other) const -> bool {
     return this->word.value == other.word.value;
 };
 
-auto Enemy::collides(sf::Sprite& other) -> bool {
+auto Enemy::collides(sf::Sprite& other) const -> bool {
     if (other.getGlobalBounds().contains(get_sprite().getPosition())) {
         return true;
     }

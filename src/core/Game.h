@@ -4,6 +4,7 @@
 
 #include "GameState.h"
 #include "../entities/components/Button.h"
+#include "../entities/components/MainMenu.h"
 #include "../entities/enemy/Spawner.h"
 #include "../logic/GeneralGlossary.h"
 #include "../logic/RoundGlossary.h"
@@ -24,8 +25,8 @@ private:
     void handle(const sf::Event::MouseButtonPressed&);
     auto handle(const sf::Event::TextEntered& textEntered) -> void;
     // void handle(const sf::Event::TouchBegan& touchBegan);
-    auto draw_enemies(float deltaTime) -> void;
-    auto draw_decorations(float deltaTime) -> void;
+    auto draw_enemies(std::optional<float> deltaTime) -> void;
+    auto draw_decorations(std::optional<float> deltaTime) -> void;
 
     template <typename T>
     auto handle(const T&) -> void;
@@ -34,9 +35,11 @@ private:
     auto config_round() -> void;
     auto config_castle(const sf::Texture& texture) -> void;
     auto config_decorations() -> void;
+    auto config_main_menu() -> void;
 
     // Member variables
     sf::RenderWindow m_window;
+    MainMenu m_mainMenu;
     sf::Font m_font;
     unsigned int m_fontsize;
     sf::Texture m_enemy_texture;

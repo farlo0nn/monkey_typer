@@ -26,7 +26,7 @@ public:
     auto is_word_typed() -> bool;
     auto set_active(bool active) -> void;
     auto reset_typing() -> void;
-    auto collides(sf::Sprite& other) -> bool;
+    auto collides(sf::Sprite& other) const -> bool;
     auto operator==(const Enemy& other) const -> bool;
 
 private:

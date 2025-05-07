@@ -78,3 +78,5 @@ auto EnemyState::has_reached_point() const -> bool {
     auto dy = position.y - path.front().y;
     return std::hypot(dx, dy) < 5.f;
 }
+
+

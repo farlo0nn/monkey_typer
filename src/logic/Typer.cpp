@@ -20,6 +20,9 @@ auto Typer::type(const char &letter) -> void {
     if (active_enemy) {
         if (active_enemy->get_current_expected_char() == letter) {
             active_enemy->type_next_char();
+        } else {
+            reset_word_typing();
+            return;
         }
         if (active_enemy->is_word_typed()) {
             glossary.pop(active_enemy->get_word().first_letter);
