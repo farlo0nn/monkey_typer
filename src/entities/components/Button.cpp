@@ -1,5 +1,7 @@
 #include "Button.h"
 
+#include <iostream>
+
 #include "SFML/Graphics/RenderTarget.hpp"
 
 Button::Button(const sf::Texture& textureInactive, const sf::Texture &textureActive, const sf::Font& font, const std::string& text, int fontSize): sprite(textureInactive), label(font) {
@@ -17,20 +19,28 @@ Button::Button(const sf::Texture &textureInactive, const sf::Texture &textureAct
 
 
 auto Button::onClick(Callback cb) -> void {
-    this->callback = cb;
+    this->clickCallback = cb;
+}
+
+auto Button::onRelease(Callback cb) -> void {
+    this->releaseCallback = cb;
 }
 
 auto Button::click() -> void {
     setActive(!active);
     if (active) {
         sprite.setTexture(textureActive);
-        if (callback) {
-            callback();
+        if (clickCallback) {
+            clickCallback();
         }
     }
     else {
         sprite.setTexture(textureInactive);
+        if (releaseCallback) {
+            releaseCallback();
+        }
     }
+    updateLabelPosition();
 
 }
 
@@ -83,10 +93,18 @@ auto Button::updateLabelPosition() -> void {
     auto sprite_bounds = sprite.getGlobalBounds();
     auto displayed_word_bounds = label->getLocalBounds();
     label->setOrigin({label->getLocalBounds().size.x / 2, label->getLocalBounds().size.y / 2});
-    label->setPosition({
-        sprite_bounds.position.x + (sprite_bounds.size.x - displayed_word_bounds.size.x)/2 + displayed_word_bounds.size.x / 2,
-        sprite_bounds.position.y + sprite_bounds.size.y/2 - displayed_word_bounds.position.y
-    });
+    if (!isClicked()) {
+        label->setPosition({
+            sprite_bounds.position.x + (sprite_bounds.size.x - displayed_word_bounds.size.x)/2 + displayed_word_bounds.size.x / 2,
+            sprite_bounds.position.y + sprite_bounds.size.y/2 - displayed_word_bounds.position.y - 5
+        });
+    } else {
+
+        label->setPosition({
+            sprite_bounds.position.x + (sprite_bounds.size.x - displayed_word_bounds.size.x)/2 + displayed_word_bounds.size.x / 2,
+            sprite_bounds.position.y + sprite_bounds.size.y/2 - displayed_word_bounds.position.y - 25 / 2
+        });
+    }
 }
 
 void Button::draw(sf::RenderTarget &target, sf::RenderStates states) const {

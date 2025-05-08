@@ -13,7 +13,8 @@ class Button : public sf::Drawable {
 
     bool clicked = false;
     bool active = false;
-    Callback callback;
+    Callback clickCallback;
+    Callback releaseCallback;
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
@@ -35,6 +36,8 @@ public:
     auto isClicked() const -> bool;
 
     void onClick(Callback cb);
+    void onRelease(Callback cb);
+
     void click();
 
     bool contains(sf::Vector2f point) const;

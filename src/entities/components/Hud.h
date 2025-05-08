@@ -1,0 +1,35 @@
+#pragma once
+
+#include <SFML/Graphics.hpp>
+#include "MetricDisplay.h"
+
+class Hud : public sf::Drawable {
+protected:
+    sf::Texture background_texture;
+    sf::Font font;
+    int fontSize;
+    sf::Sprite background;
+    MetricDisplay<float> accuracy;
+    MetricDisplay<int> score;
+    MetricDisplay<int> highestScore;
+
+
+    template<typename  T>
+    static auto configure_component(T &component, sf::Vector2f position, float scalex, float scaley) -> void;
+
+    auto scale(sf::Vector2f scale) -> void;
+    auto setPosition(sf::Vector2f position) -> void;
+
+
+public:
+    Hud(const sf::Vector2f& position);
+
+    auto setScore(int score) -> void;
+    auto setHighestScore(int highestScore) -> void;
+    auto setWPM(int wpm) -> void;
+    auto setEnemiesKilled(bool enemiesKilled) -> void;
+    auto setAccuracy (int accuracy) -> void;
+    auto getHighestScore() -> int;
+
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+};

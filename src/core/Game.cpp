@@ -1,33 +1,37 @@
 #include "Game.h"
 
+#include <fstream>
 #include <iostream>
 #include <random>
-#include <utility>
 
 #include "../Constants.h"
-
-#include "../logic/RoundGlossary.h"
-#include "../logic/GeneralGlossary.h"
-
 #include "../entities/enemy/EnemySpawnPositions.h"
-#include "../entities/enemy/Directions.h"
 
 #include "../utils.cpp"
 
 Game::Game()
     : m_window{sf::VideoMode(WINDOW_SIZE), "MonkeyTyper", sf::Style::Titlebar | sf::Style::Close},
       m_mainMenu(
-      [&](){ this->m_gamestate = GameState::GAME;},
+      [&](){ this->m_gamestate = GameState::GAME; score=0;},
       []() { std::cout << "MENU" << std::endl; },
       [&]() { this->m_window.close(); }
       ),
+      m_pauseMenu(
+      [&](){ this->m_gamestate = GameState::GAME;},
+      [&]() { this->m_gamestate = GameState::MENU; },
+      [&]() { this->config_round(); this->m_gamestate = GameState::GAME; score=0;}
+      ),
+      m_gameOverMenu(
+        [&](){ this->m_gamestate = GameState::GAME;},
+        [&]() { this->config_round(); this->m_gamestate = GameState::GAME; score=0;}
+      ),
+      m_hud({WINDOW_SIZE.x/2, WINDOW_SIZE.y - 20}),
       m_font{FONT_PATH},
       m_logText{m_font, "", 20},
       m_instructions{m_font, "Press Enter to change handler type", 24},
       m_spawner(5, 3),
       m_round_number(1),
       m_fontsize(WORD_FONTSIZE),
-      m_enemy_texture("assets/sprites/enemies/chicken.png"),
       m_background_texture("assets/background/background_new.png"),
       m_background(m_background_texture),
       m_castle_texture("assets/sprites/castle/castle0.png"),
@@ -37,7 +41,10 @@ Game::Game()
       active_settings_button_texture("assets/ui/settings/settings_wheel.png"),
       inactive_settings_button_texture("assets/ui/settings/settings_wheel_pressed.png"),
       m_settings_button(active_settings_button_texture, inactive_settings_button_texture),
-      m_tree_texture("assets/sprites/decorations/trees.png") {
+      m_tree_texture("assets/sprites/decorations/trees.png"),
+      score(0)
+
+{
     m_window.setFramerateLimit(60);
     m_window.setVerticalSyncEnabled(true);
     m_logText.setFillColor(sf::Color::White);
@@ -45,7 +52,7 @@ Game::Game()
     m_instructions.setStyle(sf::Text::Bold);
     m_general_glossary.load(WORDS_PATH);
     m_settings_button.setPosition({WINDOW_SIZE.x - m_settings_button.getGlobalBounds().size.x - 20, 20});
-
+    m_hud.setHighestScore(loadHighestScore());
     config_castle(m_castle_texture);
     config_background();
 
@@ -93,7 +100,6 @@ auto Game::draw_decorations(std::optional<float> deltaTime) -> void {
     }
 }
 
-
 // MAIN RUN FUNCTION
 
 auto Game::run() -> void
@@ -108,13 +114,15 @@ auto Game::run() -> void
 
         m_window.clear();
         m_window.draw(m_background);
+        m_window.draw(m_castle);
         m_window.draw(m_settings_button);
 
 
         switch (m_gamestate) {
             case GameState::MENU: {
 
-                m_window.draw(m_castle);
+                clock.restart();
+
 
                 draw_decorations(std::nullopt);
                 draw_enemies(std::nullopt);
@@ -125,14 +133,18 @@ auto Game::run() -> void
             case GameState::GAME: {
 
                 m_typer.glossary.add(m_spawner.update());
+                m_hud.setScore(score);
+
+                if (score > m_hud.getHighestScore()) {
+                    m_hud.setHighestScore(score);
+                }
 
                 auto deltaTime = clock.restart().asSeconds();
-
-                m_window.draw(m_castle);
 
                 draw_decorations(deltaTime);
 
                 draw_enemies(deltaTime);
+                m_window.draw(m_hud);
 
                 if (m_typer.glossary.empty() && m_spawner.empty()) {
                     m_gamestate = GameState::BETWEEN_ROUNDS;
@@ -143,6 +155,15 @@ auto Game::run() -> void
 
             }; break;
             case GameState::PAUSE: {
+
+
+                clock.restart();
+
+                draw_decorations(std::nullopt);
+                draw_enemies(std::nullopt);
+
+                m_window.draw(m_pauseMenu);
+
             }; break;
             case GameState::BETWEEN_ROUNDS: {
                 m_window.draw(m_instructions);
@@ -156,8 +177,11 @@ auto Game::run() -> void
 
                 draw_decorations(deltaTime);
                 m_window.draw(m_castle);
+                // m_gamestate = GameState::MENU;
             }; break;
         }
+
+        m_window.draw(m_hud);
 
         m_window.display();
 
@@ -178,35 +202,64 @@ auto Game::handle(const sf::Event::MouseButtonPressed& mousePressed) -> void {
     if (m_settings_button.getGlobalBounds().contains(sf::Vector2<float>(mousePressed.position))) {
         m_settings_button.click();
     }
-    if (m_gamestate == GameState::MENU) {
-        for (auto& button : m_mainMenu.get_buttons()) {
-            if (button.getGlobalBounds().contains(sf::Vector2<float>(mousePressed.position))) {
+
+
+    AbstractMenu* currentMenu = nullptr;
+
+    switch (m_gamestate) {
+        case GameState::MENU: currentMenu = &m_mainMenu; break;
+        case GameState::PAUSE: currentMenu = &m_pauseMenu; break;
+        case GameState::GAME_OVER: currentMenu = &m_gameOverMenu; break;
+        default: break;
+    }
+
+    if (currentMenu) {
+        for (auto& button : currentMenu->get_buttons()) {
+            if (button.getGlobalBounds().contains(sf::Vector2f(mousePressed.position))) {
                 button.click();
             }
         }
     }
 
+
+
 }
+
+auto Game::handle(const sf::Event::MouseButtonReleased& mouseReleased) -> void {
+    if (m_gamestate == GameState::MENU) {
+        for (auto& button : m_mainMenu.get_buttons()) {
+            if (button.isClicked()) {
+                button.click();
+            }
+        }
+    }
+    else if (m_gamestate == GameState::PAUSE) {
+        for (auto& button : m_pauseMenu.get_buttons()) {
+            if (button.isClicked()) {
+                button.click();
+            }
+        }
+    }
+}
+
 
 auto Game::handle(const sf::Event::TextEntered& textEntered) -> void {
     if (m_gamestate == GameState::GAME) {
         uint32_t u = textEntered.unicode;
         auto c = static_cast<char>(u);
-        m_typer.type(c);
+        auto is_typed = m_typer.type(c);
+        if (is_typed) {
+            score += is_typed;
+        };
     }
 }
 
 auto Game::handle(const sf::Event::KeyPressed& keyPress) -> void{
     if (m_gamestate == GameState::GAME) {
         if (keyPress.code == sf::Keyboard::Key::Escape) {
-            m_gamestate = GameState::MENU;
+            m_gamestate = GameState::PAUSE;
         }
     }
-}
-
-auto Game::handle(const sf::Event::MouseMoved& mouseMoved) -> void {
-    // do not log event
-    // m_log.emplace_back("Mouse Moved: " + vec2ToString(mouseMoved.position));
 }
 
 template<typename T>
@@ -254,6 +307,8 @@ auto Game::config_background() -> void {
 }
 
 auto Game::config_round() -> void {
+    m_typer = Typer();
+    m_spawner = Spawner(5, 3);
     for (auto word : m_general_glossary.get_random_words(m_round_number*5 + 5)) {
         auto state = ENEMY_SPAWN_POSITIONS.at(utils::get_random_enum_option<SpawnPosition>());
         auto animated_sprite = getAnimatedSprite(utils::get_random_enum_option<as::AnimatedSprites>());
@@ -354,4 +409,45 @@ auto Game::config_decorations() -> void {
 
 auto Game::config_main_menu() -> void {
     auto buttons = m_mainMenu.get_buttons();
+}
+
+
+auto Game::loadHighestScore() -> int {
+    auto path = "saves/highest_score.txt";
+    std::cout << "Loading " << path << "..." << std::endl;
+    if (path_exists(path)) {
+
+        auto file = std::fstream(path);
+        auto word = std::string();
+
+        file >> word;
+        auto score = std::stoi(word);
+        std::cout << "Score: " << score << std::endl;
+        return score;
+    }
+    else {
+        // throw std::runtime_error("Could not open file " + path);
+        std::cout << "Could not open file " << path << std::endl;
+    }
+    return 0;
+}
+
+auto Game::saveHighestScore() -> void {
+    auto path = "saves/highest_score.txt";
+    std::cout << "Loading " << path << "..." << std::endl;
+    if (path_exists(path)) {
+
+        auto file = std::fstream(path);
+        auto highestScore = std::to_string(m_hud.getHighestScore());
+
+        file << highestScore;
+    }
+    else {
+        // throw std::runtime_error("Could not open file " + path);
+        std::cout << "Could not open file " << path << std::endl;
+    }
+}
+
+Game::~Game() {
+    saveHighestScore();
 }

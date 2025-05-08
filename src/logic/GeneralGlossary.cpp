@@ -43,4 +43,3 @@ auto GeneralGlossary::get_random_words(int n) -> std::vector<Word> {
     );
     return result;
 }
-

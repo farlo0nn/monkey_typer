@@ -8,6 +8,6 @@ public:
     Enemy* active_enemy = nullptr;
     Typer();
 
-    auto type(const char& letter) -> void;
+    auto type(const char& letter) -> int;
     auto reset_word_typing() -> void;
 };

@@ -1,0 +1,13 @@
+#include "GameOverMenu.h"
+
+GameOverMenu::GameOverMenu(Callback onRestart, Callback onQuit) : AbstractMenu() {
+
+    auto startButton = create_button("RESTART", {1080/2, 720/2 - 140});
+    auto quitButton = create_button("QUIT", {1080/2, 720/2 + 130});
+
+    buttons.emplace_back(startButton);
+    buttons.back().onRelease(onRestart);
+
+    buttons.emplace_back(quitButton);
+    buttons.back().onRelease(onQuit);
+}

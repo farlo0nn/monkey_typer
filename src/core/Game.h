@@ -4,7 +4,10 @@
 
 #include "GameState.h"
 #include "../entities/components/Button.h"
+#include "../entities/components/GameOverMenu.h"
 #include "../entities/components/MainMenu.h"
+#include "../entities/components/PauseMenu.h"
+#include "../entities/components/Hud.h"
 #include "../entities/enemy/Spawner.h"
 #include "../logic/GeneralGlossary.h"
 #include "../logic/RoundGlossary.h"
@@ -14,6 +17,7 @@ class Game
 {
 public:
     Game();
+    ~Game();
     auto run() -> void;
 
 private:
@@ -21,9 +25,11 @@ private:
     // event handlers
     auto  handle(const sf::Event::Closed&) -> void;
     auto handle(const sf::Event::KeyPressed& keyPress) -> void;
-    auto handle(const sf::Event::MouseMoved& mouseMoved) -> void;
-    void handle(const sf::Event::MouseButtonPressed&);
+    // auto handle(const sf::Event::MouseMoved& mouseMoved) -> void;
+    auto handle(const sf::Event::MouseButtonPressed& mousePressed) -> void;
+    auto handle(const sf::Event::MouseButtonReleased& mouseReleased) -> void;
     auto handle(const sf::Event::TextEntered& textEntered) -> void;
+
     // void handle(const sf::Event::TouchBegan& touchBegan);
     auto draw_enemies(std::optional<float> deltaTime) -> void;
     auto draw_decorations(std::optional<float> deltaTime) -> void;
@@ -37,9 +43,15 @@ private:
     auto config_decorations() -> void;
     auto config_main_menu() -> void;
 
+    auto loadHighestScore() -> int;
+    auto saveHighestScore() -> void;
+
     // Member variables
     sf::RenderWindow m_window;
     MainMenu m_mainMenu;
+    PauseMenu m_pauseMenu;
+    GameOverMenu m_gameOverMenu;
+    Hud m_hud;
     sf::Font m_font;
     unsigned int m_fontsize;
     sf::Texture m_enemy_texture;
@@ -61,4 +73,5 @@ private:
     sf::Texture m_tree_texture;
     std::vector<AnimatedSprite> m_decorations;
     Button m_settings_button;
+    int score;
 };
