@@ -42,7 +42,6 @@ add_executable(Funzies src/main.cpp
         src/logic/GeneralGlossary.h
         src/logic/Word.cpp
         src/logic/Word.h
-        src/logic/Point.h
         src/logic/RoundGlossary.cpp
         src/logic/RoundGlossary.h
         src/entities/enemy/EnemyComparator.cpp
@@ -66,6 +65,18 @@ add_executable(Funzies src/main.cpp
         src/entities/enemy/Directions.h
         src/entities/components/Button.cpp
         src/entities/components/Button.h
+        src/entities/components/AbstractMenu.cpp
+        src/entities/components/AbstractMenu.h
+        src/entities/components/GameOverMenu.cpp
+        src/entities/components/GameOverMenu.h
+        src/entities/components/MainMenu.cpp
+        src/entities/components/MainMenu.h
+        src/entities/components/PauseMenu.cpp
+        src/entities/components/PauseMenu.h
+        src/entities/components/Hud.cpp
+        src/entities/components/Hud.h
+        src/entities/utils/PausableClock.cpp
+        src/entities/utils/PausableClock.h
 )
 
 target_link_libraries(Funzies PRIVATE SFML::Graphics fmt)

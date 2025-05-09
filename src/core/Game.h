@@ -8,6 +8,7 @@
 #include "../entities/components/MainMenu.h"
 #include "../entities/components/PauseMenu.h"
 #include "../entities/components/Hud.h"
+#include "../entities/utils/PausableClock.h"
 #include "../entities/enemy/Spawner.h"
 #include "../logic/GeneralGlossary.h"
 #include "../logic/RoundGlossary.h"
@@ -46,6 +47,8 @@ private:
     auto loadHighestScore() -> int;
     auto saveHighestScore() -> void;
 
+    auto start_game() -> void;
+
     // Member variables
     sf::RenderWindow m_window;
     MainMenu m_mainMenu;
@@ -74,4 +77,5 @@ private:
     std::vector<AnimatedSprite> m_decorations;
     Button m_settings_button;
     int score;
+    PausableClock m_wpm_clock;
 };

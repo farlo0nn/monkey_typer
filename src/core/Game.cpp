@@ -12,7 +12,7 @@
 Game::Game()
     : m_window{sf::VideoMode(WINDOW_SIZE), "MonkeyTyper", sf::Style::Titlebar | sf::Style::Close},
       m_mainMenu(
-      [&](){ this->m_gamestate = GameState::GAME; score=0;},
+      [&](){ this->m_gamestate = GameState::GAME; score=0; },
       []() { std::cout << "MENU" << std::endl; },
       [&]() { this->m_window.close(); }
       ),
@@ -43,7 +43,6 @@ Game::Game()
       m_settings_button(active_settings_button_texture, inactive_settings_button_texture),
       m_tree_texture("assets/sprites/decorations/trees.png"),
       score(0)
-
 {
     m_window.setFramerateLimit(60);
     m_window.setVerticalSyncEnabled(true);
@@ -100,11 +99,18 @@ auto Game::draw_decorations(std::optional<float> deltaTime) -> void {
     }
 }
 
+auto Game::start_game() -> void {
+    score=0;
+    m_round_number = 0;
+    m_wpm_clock.reset();
+}
+
 // MAIN RUN FUNCTION
 
 auto Game::run() -> void
 {
     auto clock = sf::Clock();
+    m_wpm_clock.reset();
 
     while (m_window.isOpen())
     {
@@ -147,7 +153,8 @@ auto Game::run() -> void
                 m_window.draw(m_hud);
 
                 if (m_typer.glossary.empty() && m_spawner.empty()) {
-                    m_gamestate = GameState::BETWEEN_ROUNDS;
+                    m_round_number++;
+                    config_round();
                 }
 
 
@@ -165,19 +172,12 @@ auto Game::run() -> void
                 m_window.draw(m_pauseMenu);
 
             }; break;
-            case GameState::BETWEEN_ROUNDS: {
-                m_window.draw(m_instructions);
-                m_round_number++;
-                m_gamestate = GameState::GAME;
-                config_round();
-                config_castle(m_castle_texture);
-            }
             case GameState::GAME_OVER: {
                 auto deltaTime = clock.restart().asSeconds();
 
                 draw_decorations(deltaTime);
                 m_window.draw(m_castle);
-                // m_gamestate = GameState::MENU;
+                m_window.draw(m_gameOverMenu);
             }; break;
         }
 
@@ -307,6 +307,7 @@ auto Game::config_background() -> void {
 }
 
 auto Game::config_round() -> void {
+    config_castle(m_castle_texture);
     m_typer = Typer();
     m_spawner = Spawner(5, 3);
     for (auto word : m_general_glossary.get_random_words(m_round_number*5 + 5)) {

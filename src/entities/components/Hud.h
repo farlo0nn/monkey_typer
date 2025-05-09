@@ -9,7 +9,7 @@ protected:
     sf::Font font;
     int fontSize;
     sf::Sprite background;
-    MetricDisplay<float> accuracy;
+    MetricDisplay<float> wpm;
     MetricDisplay<int> score;
     MetricDisplay<int> highestScore;
 
@@ -26,10 +26,10 @@ public:
 
     auto setScore(int score) -> void;
     auto setHighestScore(int highestScore) -> void;
-    auto setWPM(int wpm) -> void;
+    auto setWPM(float wpm) -> void;
     auto setEnemiesKilled(bool enemiesKilled) -> void;
-    auto setAccuracy (int accuracy) -> void;
-    auto getHighestScore() -> int;
+
+    auto getHighestScore() const -> int;
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };

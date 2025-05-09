@@ -1,6 +1,17 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include <type_traits>
+#include <iomanip>
+#include <sstream>
+#include <string>
+
+
+inline auto to_str_with_precision(float value, int precision) -> std::string {
+    std::ostringstream out;
+    out << std::fixed << std::setprecision(precision) << value;
+    return out.str();
+}
+
 
 template <typename T>
 concept Arithmetic = std::is_arithmetic_v<T>;
@@ -54,6 +65,11 @@ auto MetricDisplay<T>::setValue(const T& value) -> void {
 
 template <Arithmetic T>
 auto MetricDisplay<T>::updateLabel() -> void {
+    this->valueLabel.setString(to_str_with_precision(this->value, 1));
+}
+
+template <>
+inline auto MetricDisplay<int>::updateLabel() -> void {
     this->valueLabel.setString(std::to_string(this->value));
 }
 
