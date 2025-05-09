@@ -1,10 +1,10 @@
 #include "MainMenu.h"
 
-MainMenu::MainMenu(Callback onStart, Callback onHelp, Callback onQuit) : AbstractMenu() {
+MainMenu::MainMenu(Callback onStart, Callback onHelp, Callback onQuit) : BaseMenu() {
 
     auto startButton = create_button("START", {1080/2, 720/2 - 170});
 
-    auto helpButton = create_button("HELP", {1080/2, 720/2 - 20});
+    auto helpButton = create_button("SETTINGS", {1080/2, 720/2 - 20});
     auto quitButton = create_button("QUIT", {1080/2, 720/2 + 130});
 
     buttons.emplace_back(startButton);

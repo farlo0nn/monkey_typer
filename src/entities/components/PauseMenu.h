@@ -1,7 +1,7 @@
 #pragma once
-#include "AbstractMenu.h"
+#include "BaseMenu.h"
 
-class PauseMenu : public AbstractMenu {
+class PauseMenu : public BaseMenu {
 public:
     PauseMenu(Callback onResume, Callback onMainMenu, Callback onRestart);
 };

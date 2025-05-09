@@ -56,8 +56,8 @@ add_executable(Funzies src/main.cpp
         src/Constants.h
         src/logic/Typer.cpp
         src/logic/Typer.h
-        src/entities/enemy/HighlighedLabel.cpp
-        src/entities/enemy/HighlighedLabel.h
+        src/entities/enemy/HighlightedLabel.cpp
+        src/entities/enemy/HighlightedLabel.h
         src/entities/enemy/SpawnPosition.h
         src/entities/enemy/AnimatedSprite.cpp
         src/entities/enemy/AnimatedSprite.h
@@ -65,8 +65,8 @@ add_executable(Funzies src/main.cpp
         src/entities/enemy/Directions.h
         src/entities/components/Button.cpp
         src/entities/components/Button.h
-        src/entities/components/AbstractMenu.cpp
-        src/entities/components/AbstractMenu.h
+        src/entities/components/BaseMenu.cpp
+        src/entities/components/BaseMenu.h
         src/entities/components/GameOverMenu.cpp
         src/entities/components/GameOverMenu.h
         src/entities/components/MainMenu.cpp
@@ -75,10 +75,23 @@ add_executable(Funzies src/main.cpp
         src/entities/components/PauseMenu.h
         src/entities/components/Hud.cpp
         src/entities/components/Hud.h
+        src/entities/components/Slider.cpp
+        src/entities/components/Slider.h
         src/entities/utils/PausableClock.cpp
         src/entities/utils/PausableClock.h
         src/logic/TypeStat.cpp
         src/logic/TypeStat.h
+        src/entities/components/Settings.cpp
+        src/entities/components/Settings.h
+        src/entities/components/Slider.cpp
+        src/entities/components/BaseArrowMenu.cpp
+        src/entities/components/BaseArrowMenu.h
+        src/entities/components/DifficultyArrowMenu.cpp
+        src/entities/components/DifficultyArrowMenu.h
+        src/core/Difficulties.h
+        src/core/Fonts.h
+        src/entities/components/FontArrowMenu.cpp
+        src/entities/components/FontArrowMenu.h
 )
 
 target_link_libraries(Funzies PRIVATE SFML::Graphics fmt)

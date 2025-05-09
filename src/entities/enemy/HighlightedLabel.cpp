@@ -1,6 +1,6 @@
-#include "HighlighedLabel.h"
+#include "HighlightedLabel.h"
 
-HighlighedLabel::HighlighedLabel(const sf::Font& font, unsigned int fontsize)
+HighlightedLabel::HighlightedLabel(const sf::Font& font, unsigned int fontsize)
     : typingIndex(0), typedText(font), untypedText(font)
 {
     setFont(font);
@@ -15,39 +15,39 @@ HighlighedLabel::HighlighedLabel(const sf::Font& font, unsigned int fontsize)
     untypedText.setOutlineThickness(3);
 }
 
-void HighlighedLabel::setString(const std::string& str) {
+void HighlightedLabel::setString(const std::string& str) {
     fullString = str;
     updateHighlight();
 }
 
-void HighlighedLabel::setFont(const sf::Font& font) {
+void HighlightedLabel::setFont(const sf::Font& font) {
     typedText.setFont(font);
     untypedText.setFont(font);
 }
 
-void HighlighedLabel::setPosition(const sf::Vector2f& pos) {
+void HighlightedLabel::setPosition(const sf::Vector2f& pos) {
     typedText.setPosition(pos);
     updateHighlight();
 }
 
-void HighlighedLabel::setCharacterSize(unsigned int size) {
+void HighlightedLabel::setCharacterSize(unsigned int size) {
     typedText.setCharacterSize(size);
     untypedText.setCharacterSize(size);
     updateHighlight();
 }
 
-void HighlighedLabel::setTypingIndex(size_t index) {
+void HighlightedLabel::setTypingIndex(size_t index) {
     typingIndex = index;
     updateHighlight();
 }
 
-void HighlighedLabel::setColors(sf::Color typed, sf::Color untyped) {
+void HighlightedLabel::setColors(sf::Color typed, sf::Color untyped) {
     typedColor = typed;
     untypedColor = untyped;
     updateHighlight();
 }
 
-void HighlighedLabel::updateHighlight() {
+void HighlightedLabel::updateHighlight() {
     std::string typedStr = fullString.substr(0, typingIndex);
     std::string untypedStr = fullString.substr(typingIndex);
 
@@ -63,7 +63,7 @@ void HighlighedLabel::updateHighlight() {
     untypedText.setPosition(offset);
 }
 
-auto HighlighedLabel::getGlobalBounds() const -> sf::FloatRect {
+auto HighlightedLabel::getGlobalBounds() const -> sf::FloatRect {
     auto a = typedText.getGlobalBounds();
     auto b = untypedText.getGlobalBounds();
     return sf::FloatRect(
@@ -72,7 +72,7 @@ auto HighlighedLabel::getGlobalBounds() const -> sf::FloatRect {
     );
 }
 
-auto HighlighedLabel::getLocalBounds() const -> sf::FloatRect {
+auto HighlightedLabel::getLocalBounds() const -> sf::FloatRect {
     auto g = getGlobalBounds();
     return sf::FloatRect(
         {0,0},
@@ -80,11 +80,11 @@ auto HighlighedLabel::getLocalBounds() const -> sf::FloatRect {
     );
 }
 
-auto HighlighedLabel::reset() -> void {
+auto HighlightedLabel::reset() -> void {
     typingIndex = 0;
 }
 
-void HighlighedLabel::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+void HighlightedLabel::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     target.draw(typedText, states);
     target.draw(untypedText, states);
 }

@@ -13,8 +13,8 @@ Game::Game()
     : m_window{sf::VideoMode(WINDOW_SIZE), "MonkeyTyper", sf::Style::Titlebar | sf::Style::Close},
       m_mainMenu(
       [&](){ start_game(); },
-      []() { std::cout << "MENU" << std::endl; },
-      [&]() { this->m_window.close(); }
+      [&]() { m_gamestate = GameState::SETTINGS; },
+      [&]() { m_window.close(); }
       ),
       m_pauseMenu(
       [&](){ this->m_gamestate = GameState::GAME; m_wpm_clock.start(); },
@@ -38,9 +38,6 @@ Game::Game()
       m_destroyed_castle_texture("assets/sprites/castle/castleDestroyed.png"),
       m_gamestate(GameState::MENU),
       m_castle(m_castle_texture),
-      active_settings_button_texture("assets/ui/settings/settings_wheel.png"),
-      inactive_settings_button_texture("assets/ui/settings/settings_wheel_pressed.png"),
-      m_settings_button(active_settings_button_texture, inactive_settings_button_texture),
       m_tree_texture("assets/sprites/decorations/trees.png"),
       score(0)
 {
@@ -50,7 +47,6 @@ Game::Game()
     m_instructions.setFillColor(sf::Color::White);
     m_instructions.setStyle(sf::Text::Bold);
     m_general_glossary.load(WORDS_PATH);
-    m_settings_button.setPosition({WINDOW_SIZE.x - m_settings_button.getGlobalBounds().size.x - 20, 20});
     m_hud.setHighestScore(loadHighestScore());
 
     config_castle(m_castle_texture);
@@ -111,79 +107,38 @@ auto Game::start_game() -> void {
 
 auto Game::run() -> void
 {
-    auto clock = sf::Clock();
     m_wpm_clock.reset();
 
     while (m_window.isOpen())
     {
         while (auto event = m_window.pollEvent()) {
             event->visit([this](auto& e) { this->handle(e); });
+            if (m_gamestate == GameState::SETTINGS) {
+                m_settingsPannel.getFontSizeSlider().handleEvent(*event, m_window);
+            }
         }
 
         m_window.clear();
         m_window.draw(m_background);
         m_window.draw(m_castle);
-        m_window.draw(m_settings_button);
 
 
         switch (m_gamestate) {
             case GameState::MENU: {
-
-                clock.restart();
-
-
-                draw_decorations(std::nullopt);
-                draw_enemies(std::nullopt);
-
-                m_window.draw(m_mainMenu);
-
-            }; break;
-            case GameState::GAME: {
-
-                m_typer.glossary.add(m_spawner.update());
-                m_hud.setScore(score);
-
-                if (score > m_hud.getHighestScore()) {
-                    m_hud.setHighestScore(score);
-                }
-
-                m_hud.setWPM(score / (5.f * (m_wpm_clock.getElapsedTime().asSeconds() / 60.f)));
-
-
-                auto deltaTime = clock.restart().asSeconds();
-
-                draw_decorations(deltaTime);
-
-                draw_enemies(deltaTime);
-                m_window.draw(m_hud);
-
-                if (m_typer.glossary.empty() && m_spawner.empty()) {
-                    m_round_number++;
-                    m_hud.setRound(m_round_number);
-                    config_round();
-                }
-
-
-
-
+                displayMenuScene(&m_mainMenu);
             }; break;
             case GameState::PAUSE: {
-
-
-                clock.restart();
-
-                draw_decorations(std::nullopt);
-                draw_enemies(std::nullopt);
-
-                m_window.draw(m_pauseMenu);
-
+                displayMenuScene(&m_pauseMenu);
             }; break;
             case GameState::GAME_OVER: {
-
-                draw_decorations(std::nullopt);
-                m_window.draw(m_castle);
-                m_window.draw(m_gameOverMenu);
-
+                displayMenuScene(&m_gameOverMenu);
+            }; break;
+            case GameState::SETTINGS: {
+                m_settingsPannel.update();
+                displayMenuScene(&m_settingsPannel);
+            }; break;
+            case GameState::GAME: {
+                displayGameScene();
             }; break;
         }
 
@@ -204,13 +159,8 @@ auto Game::handle(const sf::Event::Closed&) -> void {
 }
 
 auto Game::handle(const sf::Event::MouseButtonPressed& mousePressed) -> void {
-    std::cout << m_settings_button.getGlobalBounds().contains(sf::Vector2<float>(mousePressed.position)) << std::endl;
-    if (m_settings_button.getGlobalBounds().contains(sf::Vector2<float>(mousePressed.position))) {
-        m_settings_button.click();
-    }
 
-
-    AbstractMenu* currentMenu = nullptr;
+    BaseMenu* currentMenu = nullptr;
 
     switch (m_gamestate) {
         case GameState::MENU: currentMenu = &m_mainMenu; break;
@@ -330,6 +280,41 @@ auto Game::config_round() -> void {
             )
         );
     }
+}
+
+auto Game::displayMenuScene(const sf::Drawable* menu) -> void {
+    m_clock.restart();
+
+    draw_decorations(std::nullopt);
+    draw_enemies(std::nullopt);
+    m_window.draw(*menu);
+}
+
+auto Game::displayGameScene() -> void {
+
+    m_typer.glossary.add(m_spawner.update());
+    m_hud.setScore(score);
+
+    if (score > m_hud.getHighestScore()) {
+        m_hud.setHighestScore(score);
+    }
+
+    m_hud.setWPM(score / (5.f * (m_wpm_clock.getElapsedTime().asSeconds() / 60.f)));
+
+
+    auto deltaTime = m_clock.restart().asSeconds();
+
+    draw_decorations(deltaTime);
+
+    draw_enemies(deltaTime);
+    m_window.draw(m_hud);
+
+    if (m_typer.glossary.empty() && m_spawner.empty()) {
+        m_round_number++;
+        m_hud.setRound(m_round_number);
+        config_round();
+    }
+
 }
 
 auto Game::config_decorations() -> void {

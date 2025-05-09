@@ -2,7 +2,7 @@
 
 #include "EnemyState.h"
 #include "../../logic/Word.h"
-#include "HighlighedLabel.h"
+#include "HighlightedLabel.h"
 #include <SFML/Graphics.hpp>
 
 #include "AnimatedSprite.h"
@@ -33,7 +33,7 @@ private:
     EnemyState state;
     AnimatedSprite sprite;
     sf::Texture texture;
-    HighlighedLabel label;
+    HighlightedLabel label;
     Word word;
     size_t typing_index;
     bool active_target;

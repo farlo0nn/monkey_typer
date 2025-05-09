@@ -29,7 +29,10 @@ public:
     auto setValue(const T& value) -> void;
     auto updateLabel() -> void;
     auto setPosition(const sf::Vector2f& position) -> void;
-    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+    auto setOutlineColor(const sf::Color& color) -> void;
+    auto setOutlineThickness(const float& thickness) -> void;
+    auto setCharacterSize(const int& characterSize) -> void;
 };
 
 #pragma once
@@ -38,6 +41,8 @@ public:
 template <Arithmetic T>
 MetricDisplay<T>::MetricDisplay(const sf::Font &font, const std::string &name, const T& value) : font(font), nameLabel(font, name), valueLabel(font) {
     valueLabel.setString(std::to_string(value));
+    nameLabel.setOutlineColor(sf::Color::Black);
+    valueLabel.setOutlineColor(sf::Color::Black);
 }
 
 template <Arithmetic T>
@@ -63,6 +68,24 @@ auto MetricDisplay<T>::setValue(const T& value) -> void {
     updateLabel();
 }
 
+template<Arithmetic T>
+auto MetricDisplay<T>::setOutlineThickness(const float &thickness) -> void {
+    nameLabel.setOutlineThickness(thickness);
+    valueLabel.setOutlineThickness(thickness);
+}
+
+template <Arithmetic T>
+auto MetricDisplay<T>::setOutlineColor(const sf::Color &color) -> void {
+    nameLabel.setOutlineColor(color);
+    valueLabel.setOutlineColor(color);
+}
+
+template <Arithmetic T>
+auto MetricDisplay<T>::setCharacterSize(const int& characterSize) -> void {
+    nameLabel.setCharacterSize(characterSize);
+    valueLabel.setCharacterSize(characterSize);
+}
+
 template <Arithmetic T>
 auto MetricDisplay<T>::updateLabel() -> void {
     this->valueLabel.setString(to_str_with_precision(this->value, 1));
@@ -72,4 +95,8 @@ template <>
 inline auto MetricDisplay<int>::updateLabel() -> void {
     this->valueLabel.setString(std::to_string(this->value));
 }
+
+
+
+
 

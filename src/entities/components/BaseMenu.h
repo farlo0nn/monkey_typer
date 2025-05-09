@@ -5,7 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-class AbstractMenu : public sf::Drawable {
+class BaseMenu : public sf::Drawable {
 protected:
     sf::Texture background_texture;
     sf::Texture button_active_texture;
@@ -25,7 +25,7 @@ protected:
 
 public:
 
-    AbstractMenu();
+    BaseMenu();
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     std::vector<Button>& get_buttons();
 

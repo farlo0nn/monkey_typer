@@ -5,11 +5,16 @@ Slider::Slider(const float min, const float max, float start, sf::Vector2f posit
 
     slider.setSize({width, 5});
     slider.setFillColor(sf::Color(196, 164, 132));
+    slider.setOutlineColor(sf::Color(110, 38, 14));
+    slider.setOutlineThickness(3);
     slider.setPosition(position);
 
-    dragger.setRadius(10);
-    dragger.setFillColor(sf::Color(110, 38, 14));
-    dragger.setOrigin({10, 10});
+    dragger.setPointCount(200);
+    dragger.setRadius(12);
+    dragger.setFillColor(sf::Color(149, 69, 53));
+    dragger.setOutlineThickness(3);
+    dragger.setOutlineColor(sf::Color(110, 38, 14));
+    dragger.setOrigin({dragger.getRadius(), dragger.getRadius()});
 
 
     auto x = position.x + ((value - min) / (max - min)) * width;

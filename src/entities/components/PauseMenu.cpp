@@ -1,6 +1,6 @@
 #include "PauseMenu.h"
 
-PauseMenu::PauseMenu(Callback onResume, Callback onMainMenu, Callback onRestart) : AbstractMenu() {
+PauseMenu::PauseMenu(Callback onResume, Callback onMainMenu, Callback onRestart) : BaseMenu() {
 
     auto startButton = create_button("RESUME", {1080/2, 720/2 - 170});
 

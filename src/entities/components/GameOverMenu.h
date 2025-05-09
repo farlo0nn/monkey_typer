@@ -1,7 +1,7 @@
 #pragma once
-#include "AbstractMenu.h"
+#include "BaseMenu.h"
 
-class GameOverMenu : public AbstractMenu {
+class GameOverMenu : public BaseMenu {
 public:
     GameOverMenu(Callback onRestart, Callback onQuit);
 };

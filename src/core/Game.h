@@ -8,6 +8,7 @@
 #include "../entities/components/MainMenu.h"
 #include "../entities/components/PauseMenu.h"
 #include "../entities/components/Hud.h"
+#include "../entities/components/Settings.h"
 #include "../entities/utils/PausableClock.h"
 #include "../entities/enemy/Spawner.h"
 #include "../logic/GeneralGlossary.h"
@@ -40,6 +41,11 @@ private:
 
     auto config_background() -> void;
     auto config_round() -> void;
+
+    auto displayMenuScene(const sf::Drawable *menu) -> void;
+
+    auto displayGameScene() -> void;
+
     auto config_castle(const sf::Texture& texture) -> void;
     auto config_decorations() -> void;
     auto config_main_menu() -> void;
@@ -71,11 +77,10 @@ private:
     int m_round_number;
     Typer m_typer;
     GameState m_gamestate;
-    sf::Texture active_settings_button_texture;
-    sf::Texture inactive_settings_button_texture;
     sf::Texture m_tree_texture;
     std::vector<AnimatedSprite> m_decorations;
-    Button m_settings_button;
     int score;
     PausableClock m_wpm_clock;
+    Settings m_settingsPannel;
+    sf::Clock m_clock;
 };
