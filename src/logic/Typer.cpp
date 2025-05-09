@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+
+
 Typer::Typer() : glossary(RoundGlossary()) {}
 
 auto Typer::set_active_enemy(const char& letter) -> void{
@@ -13,25 +15,27 @@ auto Typer::set_active_enemy(const char& letter) -> void{
     }
 }
 
-auto Typer::type(const char &letter) -> int {
+auto Typer::type(const char &letter) -> TypeStat {
 
     set_active_enemy(letter);
+    auto typeStat = TypeStat();
 
     if (active_enemy) {
         if (active_enemy->get_current_expected_char() == letter) {
+            typeStat.is_correct = true;
             active_enemy->type_next_char();
             if (active_enemy->is_word_typed()) {
                 glossary.pop(active_enemy->get_word().first_letter);
-                auto wordSize = active_enemy->get_word().value.size();
+                typeStat.word_size = active_enemy->get_word().value.size();
+                typeStat.is_word_typed = true;
                 active_enemy = nullptr;
-                return wordSize;
             }
 
         } else {
             reset_word_typing();
         }
     }
-    return 0;
+    return typeStat;
 }
 
 auto Typer::reset_word_typing() -> void {

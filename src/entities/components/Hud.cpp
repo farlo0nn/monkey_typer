@@ -9,7 +9,8 @@ Hud::Hud(const sf::Vector2f& position)
       fontSize(32),
       wpm(font, "WPM:", 0),
       score(font, "Score:", 0),
-      highestScore(font, "Highest:", 0)
+      highestScore(font, "Highest:", 0),
+      round(font, "Round: ", 1)
 {
     configure_component(background, position, 2, 1.3);
     auto backgroundBounds = background.getLocalBounds();
@@ -17,6 +18,7 @@ Hud::Hud(const sf::Vector2f& position)
     wpm.setPosition({position.x - backgroundBounds.size.x/2 + 450 ,position.y - backgroundBounds.size.y/2});
     score.setPosition({position.x - backgroundBounds.size.x/2 ,position.y - backgroundBounds.size.y/2});
     highestScore.setPosition({position.x - backgroundBounds.size.x/2 + 200 ,position.y - backgroundBounds.size.y/2});
+    round.setPosition({position.x - backgroundBounds.size.x/2 + 750 ,position.y - backgroundBounds.size.y/2});
 }
 
 template <typename T>
@@ -39,6 +41,7 @@ void Hud::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(wpm, states);
     target.draw(score, states);
     target.draw(highestScore, states);
+    target.draw(round, states);
 }
 
 auto Hud::setScore(int score) -> void {
@@ -48,8 +51,8 @@ auto Hud::setHighestScore(int highestScore) -> void {
     this->highestScore.setValue(highestScore);
 };
 
-auto Hud::setEnemiesKilled(bool enemiesKilled) -> void {
-
+auto Hud::setRound(int round) -> void {
+    this->round.setValue(round);
 };
 auto Hud::setWPM (float wpm) -> void {
     this->wpm.setValue(wpm);

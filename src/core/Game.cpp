@@ -12,18 +12,18 @@
 Game::Game()
     : m_window{sf::VideoMode(WINDOW_SIZE), "MonkeyTyper", sf::Style::Titlebar | sf::Style::Close},
       m_mainMenu(
-      [&](){ this->m_gamestate = GameState::GAME; score=0; },
+      [&](){ start_game(); },
       []() { std::cout << "MENU" << std::endl; },
       [&]() { this->m_window.close(); }
       ),
       m_pauseMenu(
-      [&](){ this->m_gamestate = GameState::GAME;},
+      [&](){ this->m_gamestate = GameState::GAME; m_wpm_clock.start(); },
       [&]() { this->m_gamestate = GameState::MENU; },
-      [&]() { this->config_round(); this->m_gamestate = GameState::GAME; score=0;}
+      [&]() { start_game(); }
       ),
       m_gameOverMenu(
-        [&](){ this->m_gamestate = GameState::GAME;},
-        [&]() { this->config_round(); this->m_gamestate = GameState::GAME; score=0;}
+        [&](){ start_game(); },
+        [&]() { m_window.close(); }
       ),
       m_hud({WINDOW_SIZE.x/2, WINDOW_SIZE.y - 20}),
       m_font{FONT_PATH},
@@ -52,11 +52,10 @@ Game::Game()
     m_general_glossary.load(WORDS_PATH);
     m_settings_button.setPosition({WINDOW_SIZE.x - m_settings_button.getGlobalBounds().size.x - 20, 20});
     m_hud.setHighestScore(loadHighestScore());
+
     config_castle(m_castle_texture);
     config_background();
-
     config_main_menu();
-    config_round();
     config_decorations();
 }
 
@@ -100,9 +99,12 @@ auto Game::draw_decorations(std::optional<float> deltaTime) -> void {
 }
 
 auto Game::start_game() -> void {
+    config_round();
     score=0;
-    m_round_number = 0;
+    m_round_number = 1;
+    m_hud.setRound(m_round_number);
     m_wpm_clock.reset();
+    m_gamestate = GameState::GAME;
 }
 
 // MAIN RUN FUNCTION
@@ -145,6 +147,9 @@ auto Game::run() -> void
                     m_hud.setHighestScore(score);
                 }
 
+                m_hud.setWPM(score / (5.f * (m_wpm_clock.getElapsedTime().asSeconds() / 60.f)));
+
+
                 auto deltaTime = clock.restart().asSeconds();
 
                 draw_decorations(deltaTime);
@@ -154,6 +159,7 @@ auto Game::run() -> void
 
                 if (m_typer.glossary.empty() && m_spawner.empty()) {
                     m_round_number++;
+                    m_hud.setRound(m_round_number);
                     config_round();
                 }
 
@@ -173,11 +179,11 @@ auto Game::run() -> void
 
             }; break;
             case GameState::GAME_OVER: {
-                auto deltaTime = clock.restart().asSeconds();
 
-                draw_decorations(deltaTime);
+                draw_decorations(std::nullopt);
                 m_window.draw(m_castle);
                 m_window.draw(m_gameOverMenu);
+
             }; break;
         }
 
@@ -247,9 +253,9 @@ auto Game::handle(const sf::Event::TextEntered& textEntered) -> void {
     if (m_gamestate == GameState::GAME) {
         uint32_t u = textEntered.unicode;
         auto c = static_cast<char>(u);
-        auto is_typed = m_typer.type(c);
-        if (is_typed) {
-            score += is_typed;
+        auto typeStat = m_typer.type(c);
+        if (typeStat.is_word_typed) {
+            score += typeStat.word_size;
         };
     }
 }

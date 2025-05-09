@@ -77,6 +77,8 @@ add_executable(Funzies src/main.cpp
         src/entities/components/Hud.h
         src/entities/utils/PausableClock.cpp
         src/entities/utils/PausableClock.h
+        src/logic/TypeStat.cpp
+        src/logic/TypeStat.h
 )
 
 target_link_libraries(Funzies PRIVATE SFML::Graphics fmt)

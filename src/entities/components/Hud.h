@@ -12,6 +12,7 @@ protected:
     MetricDisplay<float> wpm;
     MetricDisplay<int> score;
     MetricDisplay<int> highestScore;
+    MetricDisplay<int> round;
 
 
     template<typename  T>
@@ -27,7 +28,7 @@ public:
     auto setScore(int score) -> void;
     auto setHighestScore(int highestScore) -> void;
     auto setWPM(float wpm) -> void;
-    auto setEnemiesKilled(bool enemiesKilled) -> void;
+    auto setRound(int round) -> void;
 
     auto getHighestScore() const -> int;
 
