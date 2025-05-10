@@ -6,6 +6,7 @@
 
 #include <iostream>
 
+#include "BaseMenu.h"
 #include "../../Constants.h"
 
 Settings::Settings()
@@ -17,15 +18,15 @@ Settings::Settings()
       characterSize(32),
       fontSizeSlider(20,48,24,{WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 150},300),
       fontSizeDisplay(font,"Font Size: ", 24),
-      toMenu(button_inactive_texture, button_active_texture, font, "TO MENU", characterSize),
+      toMenu(button_active_texture, button_inactive_texture, font, "TO MENU", 24),
       difficultyArrowMenu({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 90}),
       fontArrowMenu({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2})
 {
     configure_component(background, {WINDOW_SIZE.x/2, WINDOW_SIZE.y/2}, 4.5);
+    configure_component(toMenu, {WINDOW_SIZE.x/2, WINDOW_SIZE.y/2 + 150}, 1.6);
     fontSizeDisplay.setPosition({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 210});
     fontSizeDisplay.setOutlineThickness(2);
     fontSizeDisplay.setCharacterSize(characterSize);
-
 }
 
 
@@ -43,6 +44,7 @@ void Settings::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(fontSizeDisplay, states);
     target.draw(difficultyArrowMenu, states);
     target.draw(fontArrowMenu, states);
+    target.draw(toMenu, states);
 }
 
 auto Settings::getFontSizeSlider() -> Slider & {
@@ -53,4 +55,8 @@ auto Settings::update() -> void {
     fontSizeDisplay.setValue(fontSizeSlider.getValue());
 }
 
+auto Settings::getArrowMenus() -> std::vector<BaseArrowMenu*> {
+    return {&difficultyArrowMenu, &fontArrowMenu};
+}
 
+auto Settings::getToMenu() -> Button & {}

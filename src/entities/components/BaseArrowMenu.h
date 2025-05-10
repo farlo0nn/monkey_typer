@@ -23,7 +23,7 @@ protected:
 
 public:
     BaseArrowMenu(const sf::Vector2f &position, const std::vector<std::string> &values);
-
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
-
+    auto getLeftArrow() -> Button&;
+    auto getRightArrow() -> Button&;
 };

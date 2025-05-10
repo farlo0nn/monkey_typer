@@ -1,6 +1,5 @@
 #pragma once
 #include "BaseArrowMenu.h"
-#include "../../core/Difficulties.h"
 
 class FontArrowMenu : public BaseArrowMenu {
 public:

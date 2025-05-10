@@ -9,13 +9,14 @@
 BaseArrowMenu::BaseArrowMenu(const sf::Vector2f& position, const std::vector<std::string>& values) :
     values(values),
     font("assets/fonts/pixelify-sans.ttf"),
-    leftArrowActive("assets/ui/settings/minus.png"),
-    leftArrowInactive("assets/ui/settings/minus_pressed.png"),
+    leftArrowActive("assets/ui/settings/minus_pressed.png"),
+    leftArrowInactive("assets/ui/settings/minus.png"),
     rightArrowActive("assets/ui/settings/plus_pressed.png"),
-    rightArrowInactive("assets/ui/settings/plus_pressed.png"),
+    rightArrowInactive("assets/ui/settings/plus.png"),
     leftArrow(leftArrowInactive, leftArrowActive),
     rightArrow(rightArrowInactive, rightArrowActive),
-    valueLabel(font)
+    valueLabel(font),
+    curValId(0)
 {
     leftArrow.setPosition(position);
     auto valueLabelBounds = leftArrow.getLocalBounds();
@@ -46,6 +47,7 @@ auto BaseArrowMenu::setLeftValue() -> void {
         curValId--;
         valueLabel.setString(values[curValId]);
     }
+
 }
 
 auto BaseArrowMenu::setRightValue() -> void {
@@ -53,5 +55,13 @@ auto BaseArrowMenu::setRightValue() -> void {
         curValId++;
         valueLabel.setString(values[curValId]);
     }
+
 }
 
+auto BaseArrowMenu::getLeftArrow() -> Button& {
+    return leftArrow;
+}
+
+auto BaseArrowMenu::getRightArrow() -> Button& {
+    return rightArrow;
+}

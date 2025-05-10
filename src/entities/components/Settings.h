@@ -36,4 +36,6 @@ public:
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     auto getFontSizeSlider() -> Slider&;
     auto update() -> void;
+    auto getArrowMenus() -> std::vector<BaseArrowMenu*>;
+    auto getToMenu() -> Button&;
 };

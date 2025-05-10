@@ -48,10 +48,10 @@ Game::Game()
     m_instructions.setStyle(sf::Text::Bold);
     m_general_glossary.load(WORDS_PATH);
     m_hud.setHighestScore(loadHighestScore());
+    // m_settingsPannel.getToMenu().onClick([&](){m_gamestate = GameState::MENU;});
 
     config_castle(m_castle_texture);
     config_background();
-    config_main_menu();
     config_decorations();
 }
 
@@ -159,7 +159,6 @@ auto Game::handle(const sf::Event::Closed&) -> void {
 }
 
 auto Game::handle(const sf::Event::MouseButtonPressed& mousePressed) -> void {
-
     BaseMenu* currentMenu = nullptr;
 
     switch (m_gamestate) {
@@ -177,24 +176,48 @@ auto Game::handle(const sf::Event::MouseButtonPressed& mousePressed) -> void {
         }
     }
 
-
-
+    if (m_gamestate == GameState::SETTINGS) {
+        for (auto& menu : m_settingsPannel.getArrowMenus()) {
+            if (menu->getLeftArrow().getGlobalBounds().contains(sf::Vector2f(mousePressed.position))) {
+                menu->getLeftArrow().click();
+            }
+            if (menu->getRightArrow().getGlobalBounds().contains(sf::Vector2f(mousePressed.position))) {
+                menu->getRightArrow().click();
+            }
+        }
+        // if (m_settingsPannel.getToMenu().getGlobalBounds().contains(sf::Vector2f(mousePressed.position))) {
+        //     m_settingsPannel.getToMenu().click();
+        // }
+    }
 }
 
+
+
 auto Game::handle(const sf::Event::MouseButtonReleased& mouseReleased) -> void {
-    if (m_gamestate == GameState::MENU) {
-        for (auto& button : m_mainMenu.get_buttons()) {
+
+    BaseMenu* currentMenu = nullptr;
+
+    switch (m_gamestate) {
+        case GameState::MENU: currentMenu = &m_mainMenu; break;
+        case GameState::PAUSE: currentMenu = &m_pauseMenu; break;
+        case GameState::GAME_OVER: currentMenu = &m_gameOverMenu; break;
+        default: break;
+    }
+
+    if (currentMenu) {
+        for (auto& button : currentMenu->get_buttons()) {
             if (button.isClicked()) {
                 button.click();
             }
         }
     }
-    else if (m_gamestate == GameState::PAUSE) {
-        for (auto& button : m_pauseMenu.get_buttons()) {
-            if (button.isClicked()) {
-                button.click();
-            }
+
+    if (m_gamestate == GameState::SETTINGS) {
+        for (const auto& menu : m_settingsPannel.getArrowMenus()) {
+            if (menu->getLeftArrow().isClicked()) {menu->getLeftArrow().click();}
+            if (menu->getRightArrow().isClicked()) {menu->getRightArrow().click();}
         }
+        // if (m_settingsPannel.getToMenu().isClicked()) {m_settingsPannel.getToMenu().click();}
     }
 }
 
@@ -396,11 +419,6 @@ auto Game::config_decorations() -> void {
         m_decorations.push_back(decoration);
     }
 
-}
-
-
-auto Game::config_main_menu() -> void {
-    auto buttons = m_mainMenu.get_buttons();
 }
 
 
