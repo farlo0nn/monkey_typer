@@ -4,25 +4,26 @@
 #include <iostream>
 #include <random>
 
+#include "GameMode.h"
 #include "../Constants.h"
 #include "../entities/enemy/EnemySpawnPositions.h"
 
 #include "../utils.cpp"
 
 Game::Game()
-    : m_window{sf::VideoMode(WINDOW_SIZE), "MonkeyTyper", sf::Style::Titlebar | sf::Style::Close},
+    : m_window{sf::VideoMode(WINDOW_SIZE), "MonkeyTyper", sf::Style::Default},
       m_mainMenu(
-      [&](){ start_game(); },
+      [&]() { start_game(); },
       [&]() { m_gamestate = GameState::SETTINGS; },
       [&]() { m_window.close(); }
       ),
       m_pauseMenu(
-      [&](){ this->m_gamestate = GameState::GAME; m_wpm_clock.start(); },
+      [&]() { this->m_gamestate = GameState::GAME; m_wpm_clock.start(); },
       [&]() { this->m_gamestate = GameState::MENU; },
       [&]() { start_game(); }
       ),
       m_gameOverMenu(
-        [&](){ start_game(); },
+        [&]() { start_game(); },
         [&]() { m_window.close(); }
       ),
       m_hud({WINDOW_SIZE.x/2, WINDOW_SIZE.y - 20}),
@@ -39,7 +40,8 @@ Game::Game()
       m_gamestate(GameState::MENU),
       m_castle(m_castle_texture),
       m_tree_texture("assets/sprites/decorations/trees.png"),
-      score(0)
+      score(0),
+    m_settingsPannel("saves/settings.txt")
 {
     m_window.setFramerateLimit(60);
     m_window.setVerticalSyncEnabled(true);
@@ -48,8 +50,7 @@ Game::Game()
     m_instructions.setStyle(sf::Text::Bold);
     m_general_glossary.load(WORDS_PATH);
     m_hud.setHighestScore(loadHighestScore());
-    // m_settingsPannel.getToMenu().onClick([&](){m_gamestate = GameState::MENU;});
-
+    m_settingsPannel.getToMenu().onRelease([&](){m_gamestate = GameState::MENU;});
     config_castle(m_castle_texture);
     config_background();
     config_decorations();
@@ -114,7 +115,13 @@ auto Game::run() -> void
         while (auto event = m_window.pollEvent()) {
             event->visit([this](auto& e) { this->handle(e); });
             if (m_gamestate == GameState::SETTINGS) {
-                m_settingsPannel.getFontSizeSlider().handleEvent(*event, m_window);
+                if (m_settingsPannel.systemSettingsMode()) {
+                    m_settingsPannel.getFontSizeSlider().handleEvent(*event, m_window);
+                }
+                else {
+                    m_settingsPannel.getFontSizeSlider().handleEvent(*event, m_window);
+                    m_settingsPannel.getFontSizeSlider().handleEvent(*event, m_window);
+                }
             }
         }
 
@@ -125,17 +132,17 @@ auto Game::run() -> void
 
         switch (m_gamestate) {
             case GameState::MENU: {
-                displayMenuScene(&m_mainMenu);
+                displayMenuScene(&m_mainMenu, false);
             }; break;
             case GameState::PAUSE: {
-                displayMenuScene(&m_pauseMenu);
+                displayMenuScene(&m_pauseMenu, true);
             }; break;
             case GameState::GAME_OVER: {
-                displayMenuScene(&m_gameOverMenu);
+                displayMenuScene(&m_gameOverMenu, true);
             }; break;
             case GameState::SETTINGS: {
                 m_settingsPannel.update();
-                displayMenuScene(&m_settingsPannel);
+                displayMenuScene(&m_settingsPannel, false);
             }; break;
             case GameState::GAME: {
                 displayGameScene();
@@ -185,9 +192,21 @@ auto Game::handle(const sf::Event::MouseButtonPressed& mousePressed) -> void {
                 menu->getRightArrow().click();
             }
         }
-        // if (m_settingsPannel.getToMenu().getGlobalBounds().contains(sf::Vector2f(mousePressed.position))) {
-        //     m_settingsPannel.getToMenu().click();
-        // }
+        if (m_settingsPannel.getToMenu().getGlobalBounds().contains(sf::Vector2f(mousePressed.position))) {
+            m_settingsPannel.getToMenu().click();
+        }
+        else {
+            if (m_settingsPannel.systemSettingsMode()) {
+                if (m_settingsPannel.getEnemiesSettings().getGlobalBounds().contains(sf::Vector2f(mousePressed.position))) {
+                    m_settingsPannel.getEnemiesSettings().click();
+                }
+            }
+            else {
+                if (m_settingsPannel.getSystemSettings().getGlobalBounds().contains(sf::Vector2f(mousePressed.position))) {
+                    m_settingsPannel.getSystemSettings().click();
+                }
+            }
+        }
     }
 }
 
@@ -217,7 +236,7 @@ auto Game::handle(const sf::Event::MouseButtonReleased& mouseReleased) -> void {
             if (menu->getLeftArrow().isClicked()) {menu->getLeftArrow().click();}
             if (menu->getRightArrow().isClicked()) {menu->getRightArrow().click();}
         }
-        // if (m_settingsPannel.getToMenu().isClicked()) {m_settingsPannel.getToMenu().click();}
+        if (m_settingsPannel.getToMenu().isClicked()) {m_settingsPannel.getToMenu().click();}
     }
 }
 
@@ -305,11 +324,13 @@ auto Game::config_round() -> void {
     }
 }
 
-auto Game::displayMenuScene(const sf::Drawable* menu) -> void {
+auto Game::displayMenuScene(const sf::Drawable* menu, bool to_draw_enemies) -> void {
     m_clock.restart();
 
     draw_decorations(std::nullopt);
-    draw_enemies(std::nullopt);
+    if (to_draw_enemies) {
+        draw_enemies(std::nullopt);
+    }
     m_window.draw(*menu);
 }
 
@@ -460,4 +481,5 @@ auto Game::saveHighestScore() -> void {
 
 Game::~Game() {
     saveHighestScore();
+    m_settingsPannel.saveToFile("saves/settings.txt");
 }

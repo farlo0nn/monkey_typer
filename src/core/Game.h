@@ -42,7 +42,7 @@ private:
     auto config_background() -> void;
     auto config_round() -> void;
 
-    auto displayMenuScene(const sf::Drawable *menu) -> void;
+    auto displayMenuScene(const sf::Drawable *menu, bool to_draw_enemies) -> void;
 
     auto displayGameScene() -> void;
 

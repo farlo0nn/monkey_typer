@@ -3,48 +3,96 @@
 //
 
 #include "Settings.h"
-
+#include <fstream>
 #include <iostream>
-
-#include "BaseMenu.h"
 #include "../../Constants.h"
 
-Settings::Settings()
+Settings::Settings(const std::string& path_to_settings)
     : background_texture("assets/ui/menu/mainMenuBanner.png"),
       button_active_texture("assets/ui/menu/mainMenuButtonPressed.png"),
       button_inactive_texture("assets/ui/menu/mainMenuButton.png"),
       background(background_texture),
       font("assets/fonts/pixelify-sans.ttf"),
-      characterSize(32),
-      fontSizeSlider(20,48,24,{WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 150},300),
+      characterSize(27),
+
+      fontSizeSlider(20,48,24,{WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 100},300),
       fontSizeDisplay(font,"Font Size: ", 24),
+      maxWordLengthSlider(2,7,2,{WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 100},300),
+      maxWordLengthDisplay(font,"Max Length: ", 2),
+      minWordLengthSlider(2,7,7,{WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 20},300),
+      minWordLengthDisplay(font,"Min Length: ", 7),
       toMenu(button_active_texture, button_inactive_texture, font, "TO MENU", 24),
-      difficultyArrowMenu({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 90}),
-      fontArrowMenu({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2})
+      systemSettings(button_active_texture, button_inactive_texture, font, "SYSTEM", 24),
+      enemiesSettings(button_active_texture, button_inactive_texture, font, "ENEMIES", 24),
+      difficultyArrowMenu({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 70}),
+      fontArrowMenu({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 + 20})
 {
     configure_component(background, {WINDOW_SIZE.x/2, WINDOW_SIZE.y/2}, 4.5);
     configure_component(toMenu, {WINDOW_SIZE.x/2, WINDOW_SIZE.y/2 + 150}, 1.6);
-    fontSizeDisplay.setPosition({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 210});
+    configure_component(systemSettings, {WINDOW_SIZE.x/2 - 80, WINDOW_SIZE.y/2 - 200}, 0.8, 1.1);
+    configure_component(enemiesSettings, {WINDOW_SIZE.x/2 + 80, WINDOW_SIZE.y/2 - 200}, 0.8, 1.1);
+    systemSettings.onClick(
+        [&]() {
+            this->mode=SettingsMode::SYSTEM;
+            enemiesSettings.click();
+        }
+    );
+    enemiesSettings.onClick(
+        [&]() {
+            this->mode=SettingsMode::ENEMIES;
+            systemSettings.click();
+        }
+    );
+    systemSettings.click();
+    fontSizeDisplay.setPosition({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 150});
     fontSizeDisplay.setOutlineThickness(2);
     fontSizeDisplay.setCharacterSize(characterSize);
+    maxWordLengthDisplay.setPosition({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 150});
+    maxWordLengthDisplay.setOutlineThickness(2);
+    maxWordLengthDisplay.setCharacterSize(characterSize);
+    minWordLengthDisplay.setPosition({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 70});
+    minWordLengthDisplay.setOutlineThickness(2);
+    minWordLengthDisplay.setCharacterSize(characterSize);
+    loadFromFile(path_to_settings);
+}
+
+template <typename T>
+auto Settings::configure_component(T& component, sf::Vector2f position, float scalex, float scaley) -> void {
+    component.setOrigin({component.getLocalBounds().size.x / 2, component.getLocalBounds().size.y / 2});
+    component.setPosition(position);
+    component.setScale({scalex, scaley});
 }
 
 
 template <typename T>
 auto Settings::configure_component(T& component, sf::Vector2f position, float scale) -> void {
-    component.setOrigin({component.getLocalBounds().size.x / 2, component.getLocalBounds().size.y / 2});
-    component.setPosition(position);
-    component.setScale({scale, scale});
+    Settings::configure_component(component, position, scale, scale);
 }
 
 
 void Settings::draw(sf::RenderTarget &target, sf::RenderStates states) const {
+
     target.draw(background, states);
-    target.draw(fontSizeSlider, states);
-    target.draw(fontSizeDisplay, states);
-    target.draw(difficultyArrowMenu, states);
-    target.draw(fontArrowMenu, states);
+
+    switch (this->mode) {
+        case SettingsMode::SYSTEM:
+            target.draw(fontSizeSlider, states);
+            target.draw(fontSizeDisplay, states);
+            target.draw(difficultyArrowMenu, states);
+            break;
+        case SettingsMode::ENEMIES:
+            target.draw(fontArrowMenu, states);
+            target.draw(minWordLengthDisplay, states);
+            target.draw(minWordLengthSlider, states);
+            target.draw(maxWordLengthDisplay, states);
+            target.draw(maxWordLengthSlider, states);
+            break;
+        default: break;
+    }
+
     target.draw(toMenu, states);
+    target.draw(systemSettings, states);
+    target.draw(enemiesSettings, states);
 }
 
 auto Settings::getFontSizeSlider() -> Slider & {
@@ -59,4 +107,70 @@ auto Settings::getArrowMenus() -> std::vector<BaseArrowMenu*> {
     return {&difficultyArrowMenu, &fontArrowMenu};
 }
 
-auto Settings::getToMenu() -> Button & {}
+auto Settings::getToMenu() -> Button &  { return toMenu; }
+
+auto Settings::loadFromFile(const std::string& path) -> void {
+
+    // LOADING LOGIC
+    std::cout << "Loading " << path << "..." << std::endl;
+    try {
+        auto file = std::ifstream(path);
+        auto rawFontSize = std::string();
+
+        file >> rawFontSize;
+        std::cout << rawFontSize << std::endl;
+        auto fontSize = std::stoi(rawFontSize);
+        file >> rawFontSize;
+        auto difficulty = std::string();
+        file >> difficulty;
+        auto font = std::string();
+        file >> font;
+
+        fontSizeSlider.setValue(fontSize);
+        fontSizeDisplay.setValue(fontSize);
+        fontArrowMenu.setValue(font);
+        difficultyArrowMenu.setValue(difficulty);
+
+    } catch (const std::exception& e) {
+        std::cout << e.what() << std::endl;
+    }
+
+};
+
+auto Settings::saveToFile(const std::string& path) const -> void {
+
+    std::cout << "Saving settings to " << path << "..." << std::endl;
+    try {
+        auto file = std::ofstream(path);
+        file << fontSizeDisplay.getValue() << std::endl;
+        file << fontArrowMenu.getValue() << std::endl;
+        file << difficultyArrowMenu.getValue() << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << e.what() << std::endl;
+    }
+}
+
+auto Settings::set_mode(const SettingsMode &mode) -> void {
+    this->mode = mode;
+}
+
+auto Settings::getEnemiesSettings() -> Button & {
+    return enemiesSettings;
+}
+
+auto Settings::getSystemSettings() -> Button & {
+    return systemSettings;
+}
+
+auto Settings::systemSettingsMode() -> bool {
+    return mode == SettingsMode::SYSTEM;
+}
+
+auto Settings::getMaxWordLengthSlider() -> Slider & {
+    return maxWordLengthSlider;
+}
+
+auto Settings::getMinWordLengthSlider() -> Slider & {
+    return minWordLengthSlider;
+}
+

@@ -23,8 +23,8 @@ BaseArrowMenu::BaseArrowMenu(const sf::Vector2f& position, const std::vector<std
     valueLabel.setOrigin({valueLabelBounds.size.x/2, valueLabelBounds.size.y/2});
     valueLabel.setPosition({position.x+leftArrow.getLocalBounds().size.x + 70, position.y + valueLabelBounds.size.y/2 + 10});
     rightArrow.setPosition({position.x+leftArrow.getLocalBounds().size.x + 170, position.y});
-    valueLabel.setString(values[0]);
-
+    valueLabel.setString(values[curValId]);
+    valueLabel.setCharacterSize(27);
     valueLabel.setOutlineColor(sf::Color::Black);
     valueLabel.setOutlineThickness(2);
     leftArrow.onClick([this]() {
@@ -64,4 +64,8 @@ auto BaseArrowMenu::getLeftArrow() -> Button& {
 
 auto BaseArrowMenu::getRightArrow() -> Button& {
     return rightArrow;
+}
+
+auto BaseArrowMenu::updateValueLabel() -> void {
+    valueLabel.setString(values[curValId]);
 }

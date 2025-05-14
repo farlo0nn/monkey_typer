@@ -6,8 +6,8 @@
 #include <random>
 
 
-GeneralGlossary::GeneralGlossary()  : __words() {};
-GeneralGlossary::GeneralGlossary(std::vector<Word> words) : __words(words) {}
+GeneralGlossary::GeneralGlossary() {};
+GeneralGlossary::GeneralGlossary(const std::vector<Word> &words) : __words(words) {}
 
 
 auto GeneralGlossary::get_words() -> std::vector<Word> {
@@ -33,7 +33,7 @@ auto GeneralGlossary::load(const std::string& path) -> void {
     }
 }
 
-auto GeneralGlossary::get_random_words(int n) -> std::vector<Word> {
+auto GeneralGlossary::get_random_words(const int& n) -> std::vector<Word> {
     auto result = std::vector<Word>();
     std::ranges::sample(
     __words,

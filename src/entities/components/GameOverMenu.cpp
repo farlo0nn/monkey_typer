@@ -1,6 +1,6 @@
 #include "GameOverMenu.h"
 
-GameOverMenu::GameOverMenu(Callback onRestart, Callback onQuit) : BaseMenu() {
+GameOverMenu::GameOverMenu(const Callback& onRestart, const Callback& onQuit) : BaseMenu() {
 
     auto startButton = create_button("RESTART", {1080/2, 720/2 - 100});
     auto quitButton = create_button("QUIT", {1080/2, 720/2 + 100});
