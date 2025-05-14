@@ -28,7 +28,7 @@ Game::Game()
       ),
       m_hud({WINDOW_SIZE.x/2, WINDOW_SIZE.y - 20}),
       m_font{FONT_PATH},
-      m_logText{m_font, "", 20},
+      errorBox(m_font, ""),
       m_instructions{m_font, "Press Enter to change handler type", 24},
       m_spawner(5, 3),
       m_round_number(1),
@@ -45,12 +45,16 @@ Game::Game()
 {
     m_window.setFramerateLimit(60);
     m_window.setVerticalSyncEnabled(true);
-    m_logText.setFillColor(sf::Color::White);
     m_instructions.setFillColor(sf::Color::White);
     m_instructions.setStyle(sf::Text::Bold);
     m_general_glossary.load(WORDS_PATH);
     m_hud.setHighestScore(loadHighestScore());
-    m_settingsPannel.getToMenu().onRelease([&](){m_gamestate = GameState::MENU;});
+    m_settingsPannel.getToMenu().onRelease([&]() {
+        if (auto valid=m_settingsPannel.valid(); valid.first)
+            m_gamestate = GameState::MENU;
+        else
+            errorQueue.push(valid.second.value());
+    });
     config_castle(m_castle_texture);
     config_background();
     config_decorations();
@@ -119,8 +123,8 @@ auto Game::run() -> void
                     m_settingsPannel.getFontSizeSlider().handleEvent(*event, m_window);
                 }
                 else {
-                    m_settingsPannel.getFontSizeSlider().handleEvent(*event, m_window);
-                    m_settingsPannel.getFontSizeSlider().handleEvent(*event, m_window);
+                    m_settingsPannel.getMaxWordLengthSlider().handleEvent(*event, m_window);
+                    m_settingsPannel.getMinWordLengthSlider().handleEvent(*event, m_window);
                 }
             }
         }
@@ -128,6 +132,7 @@ auto Game::run() -> void
         m_window.clear();
         m_window.draw(m_background);
         m_window.draw(m_castle);
+
 
 
         switch (m_gamestate) {
@@ -150,6 +155,20 @@ auto Game::run() -> void
         }
 
         m_window.draw(m_hud);
+
+        if (m_showingError) {
+            if (m_errorClock.getElapsedTime().asSeconds() < m_errorDisplayTime) {
+                m_window.draw(errorBox);
+            } else {
+                m_showingError = false;
+            }
+        } else {
+            if (!errorQueue.empty()) {
+                show_error(errorQueue.front());
+                errorQueue.pop();
+            }
+        }
+
 
         m_window.display();
 
@@ -482,4 +501,11 @@ auto Game::saveHighestScore() -> void {
 Game::~Game() {
     saveHighestScore();
     m_settingsPannel.saveToFile("saves/settings.txt");
+}
+
+void Game::show_error(const std::string& message) {
+    errorBox.setMessage(message);
+    errorBox.setPosition({165, 0 });
+    m_showingError = true;
+    m_errorClock.restart();
 }

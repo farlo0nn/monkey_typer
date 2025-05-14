@@ -4,6 +4,7 @@
 
 #include "GameState.h"
 #include "../entities/components/Button.h"
+#include "../entities/components/ErrorBox.h"
 #include "../entities/components/GameOverMenu.h"
 #include "../entities/components/MainMenu.h"
 #include "../entities/components/PauseMenu.h"
@@ -54,6 +55,7 @@ private:
     auto saveHighestScore() -> void;
 
     auto start_game() -> void;
+    void show_error(const std::string& message);
 
     // Member variables
     sf::RenderWindow m_window;
@@ -69,9 +71,9 @@ private:
     sf::Texture m_castle_texture;
     sf::Texture m_destroyed_castle_texture;
     sf::Sprite m_castle;
-    sf::Text m_logText;
+    ErrorBox errorBox;
+    std::queue<std::string> errorQueue;
     sf::Text m_instructions;
-    std::string m_log;
     GeneralGlossary m_general_glossary;
     Spawner m_spawner;
     int m_round_number;
@@ -83,4 +85,7 @@ private:
     PausableClock m_wpm_clock;
     Settings m_settingsPannel;
     sf::Clock m_clock;
+    sf::Clock m_errorClock;
+    bool m_showingError = false;
+    const float m_errorDisplayTime = 3.f;
 };

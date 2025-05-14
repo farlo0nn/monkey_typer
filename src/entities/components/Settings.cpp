@@ -17,9 +17,9 @@ Settings::Settings(const std::string& path_to_settings)
 
       fontSizeSlider(20,48,24,{WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 100},300),
       fontSizeDisplay(font,"Font Size: ", 24),
-      maxWordLengthSlider(2,7,2,{WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 100},300),
+      maxWordLengthSlider(2,7,7,{WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 20},300),
       maxWordLengthDisplay(font,"Max Length: ", 2),
-      minWordLengthSlider(2,7,7,{WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 20},300),
+      minWordLengthSlider(2,7,2,{WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 100},300),
       minWordLengthDisplay(font,"Min Length: ", 7),
       toMenu(button_active_texture, button_inactive_texture, font, "TO MENU", 24),
       systemSettings(button_active_texture, button_inactive_texture, font, "SYSTEM", 24),
@@ -47,13 +47,14 @@ Settings::Settings(const std::string& path_to_settings)
     fontSizeDisplay.setPosition({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 150});
     fontSizeDisplay.setOutlineThickness(2);
     fontSizeDisplay.setCharacterSize(characterSize);
-    maxWordLengthDisplay.setPosition({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 150});
+    maxWordLengthDisplay.setPosition({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 70});
     maxWordLengthDisplay.setOutlineThickness(2);
     maxWordLengthDisplay.setCharacterSize(characterSize);
-    minWordLengthDisplay.setPosition({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 70});
+    minWordLengthDisplay.setPosition({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 150});
     minWordLengthDisplay.setOutlineThickness(2);
     minWordLengthDisplay.setCharacterSize(characterSize);
     loadFromFile(path_to_settings);
+    update();
 }
 
 template <typename T>
@@ -101,6 +102,8 @@ auto Settings::getFontSizeSlider() -> Slider & {
 
 auto Settings::update() -> void {
     fontSizeDisplay.setValue(fontSizeSlider.getValue());
+    maxWordLengthDisplay.setValue(maxWordLengthSlider.getValue());
+    minWordLengthDisplay.setValue(minWordLengthSlider.getValue());
 }
 
 auto Settings::getArrowMenus() -> std::vector<BaseArrowMenu*> {
@@ -114,22 +117,33 @@ auto Settings::loadFromFile(const std::string& path) -> void {
     // LOADING LOGIC
     std::cout << "Loading " << path << "..." << std::endl;
     try {
-        auto file = std::ifstream(path);
+        auto file = std::fstream(path);
         auto rawFontSize = std::string();
-
         file >> rawFontSize;
-        std::cout << rawFontSize << std::endl;
         auto fontSize = std::stoi(rawFontSize);
-        file >> rawFontSize;
+
         auto difficulty = std::string();
         file >> difficulty;
+
         auto font = std::string();
         file >> font;
+
+        auto rawMinLength = std::string();
+        file >> rawMinLength;
+        auto minLength = std::stoi(rawMinLength);
+
+        auto rawMaxLength = std::string();
+        file >> rawMaxLength;
+        auto maxLength = std::stoi(rawMaxLength);
 
         fontSizeSlider.setValue(fontSize);
         fontSizeDisplay.setValue(fontSize);
         fontArrowMenu.setValue(font);
         difficultyArrowMenu.setValue(difficulty);
+        minWordLengthSlider.setValue(minLength);
+        maxWordLengthSlider.setValue(maxLength);
+
+        std::cout << fontSize << " " << minLength << " " << maxLength << std::endl;
 
     } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
@@ -141,10 +155,12 @@ auto Settings::saveToFile(const std::string& path) const -> void {
 
     std::cout << "Saving settings to " << path << "..." << std::endl;
     try {
-        auto file = std::ofstream(path);
+        auto file = std::fstream(path);
         file << fontSizeDisplay.getValue() << std::endl;
         file << fontArrowMenu.getValue() << std::endl;
         file << difficultyArrowMenu.getValue() << std::endl;
+        file << minWordLengthDisplay.getValue() << std::endl;
+        file << maxWordLengthDisplay.getValue() << std::endl;
     } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
     }
@@ -173,4 +189,11 @@ auto Settings::getMaxWordLengthSlider() -> Slider & {
 auto Settings::getMinWordLengthSlider() -> Slider & {
     return minWordLengthSlider;
 }
+
+auto Settings::valid() const -> std::pair<bool, std::optional<std::string>> {
+    if (maxWordLengthDisplay.getValue() < minWordLengthDisplay.getValue()) {
+        return {false, "Max length is less than min length"};
+    }
+    return {true, std::nullopt};
+};
 

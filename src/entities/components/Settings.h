@@ -61,4 +61,5 @@ public:
     auto getSystemSettings() -> Button&;
     auto getEnemiesSettings() -> Button&;
     auto systemSettingsMode() -> bool;
+    auto valid() const -> std::pair<bool, std::optional<std::string>>;
 };
