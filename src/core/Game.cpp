@@ -4,29 +4,32 @@
 #include <iostream>
 #include <random>
 
-#include "GameMode.h"
+#include "states/GameMode.h"
 #include "../Constants.h"
-#include "../entities/enemy/EnemySpawnPositions.h"
+#include "../entities/enemy/spawn/EnemySpawnPositions.h"
 
 #include "../utils.cpp"
 
 Game::Game()
-    : m_window{sf::VideoMode(WINDOW_SIZE), "MonkeyTyper", sf::Style::Default},
+    : m_window{sf::VideoMode(WINDOW_SIZE), "MonkeyTyper", sf::Style::None},
       m_mainMenu(
-      [&]() { start_game(); },
-      [&]() { m_gamestate = GameState::SETTINGS; },
-      [&]() { m_window.close(); }
+          [&]() { startGame(); },
+          [&]() { m_gamestate = GameState::SETTINGS; },
+          [&]() { m_window.close(); }
       ),
       m_pauseMenu(
-      [&]() { this->m_gamestate = GameState::GAME; m_wpm_clock.start(); },
-      [&]() { this->m_gamestate = GameState::MENU; },
-      [&]() { start_game(); }
+          [&]() {
+              this->m_gamestate = GameState::GAME;
+              m_wpm_clock.start();
+          },
+          [&]() { this->m_gamestate = GameState::MENU; },
+          [&]() { startGame(); }
       ),
       m_gameOverMenu(
-        [&]() { start_game(); },
-        [&]() { this->m_gamestate = GameState::MENU; }
+          [&]() { startGame(); },
+          [&]() { this->m_gamestate = GameState::MENU; }
       ),
-      m_hud({WINDOW_SIZE.x/2, WINDOW_SIZE.y - 20}),
+      m_hud({WINDOW_SIZE.x / 2, WINDOW_SIZE.y - 20}),
       m_font{FONT_PATH},
       errorBox(m_font, ""),
       m_instructions{m_font, "Press Enter to change handler type", 24},
@@ -40,7 +43,7 @@ Game::Game()
       m_castle(m_castle_texture),
       m_tree_texture("assets/sprites/decorations/trees.png"),
       score(0)
-{
+    {
     m_window.setFramerateLimit(60);
     m_window.setVerticalSyncEnabled(true);
     m_instructions.setFillColor(sf::Color::White);
@@ -49,62 +52,23 @@ Game::Game()
     m_hud.setHighestScore(loadHighestScore());
 
     m_settingsPannel.getToMenu().onRelease([&]() {
-        if (auto valid=m_settingsPannel.valid(); valid.first)
+        if (auto valid = m_settingsPannel.valid(); valid.first)
             m_gamestate = GameState::MENU;
         else
             errorQueue.push(valid.second.value());
     });
     m_settingsPannel.loadFromFile("saves/settings.txt");
 
-    setDifficulty(m_settingsPannel.getDifficulty());
+    setDifficulty();
     setFont(m_settingsPannel.getFont());
 
-    config_castle(m_castle_texture);
-    config_background();
-    config_decorations();
+    configCastle(m_castle_texture);
+    configBackground();
+    configDecorations();
 }
 
-
-auto Game::draw_enemies(std::optional<float> deltaTime) -> void {
-    for (auto& [_, queue] : m_typer.glossary.get_glossary()) {
-        for (auto& enemy : queue ) {
-            if (!enemy.is_active()) {
-                if (deltaTime) {
-                    enemy.update(m_round_number, *deltaTime);
-                }
-                m_window.draw(enemy);
-            }
-            if (enemy.collides(m_castle)) {
-                m_gamestate = GameState::GAME_OVER;
-                config_castle(m_destroyed_castle_texture);
-            }
-        }
-    }
-
-    if (m_typer.active_enemy) {
-        if (deltaTime) {
-            m_typer.active_enemy->update(m_round_number, *deltaTime);
-        }
-        m_window.draw(*m_typer.active_enemy);
-        if (m_typer.active_enemy->collides(m_castle)) {
-            m_gamestate = GameState::GAME_OVER;
-            config_castle(m_destroyed_castle_texture);
-        }
-    }
-
-}
-
-auto Game::draw_decorations(std::optional<float> deltaTime) -> void {
-    for (auto& decoration : m_decorations) {
-        if (deltaTime) {
-            decoration.update(*deltaTime);
-        }
-        m_window.draw(decoration);
-    }
-}
-
-auto Game::start_game() -> void {
-    config_round();
+auto Game::startGame() -> void {
+    configRound();
     score=0;
     m_round_number = 1;
     m_hud.setRound(m_round_number);
@@ -124,7 +88,9 @@ auto Game::run() -> void
             event->visit([this](auto& e) { this->handle(e); });
             if (m_gamestate == GameState::SETTINGS) {
                 if (m_settingsPannel.systemSettingsMode()) {
-                    m_settingsPannel.getFontSizeSlider().handleEvent(*event, m_window);
+                    m_settingsPannel.getBaseSpeedSlider().handleEvent(*event, m_window);
+                    m_settingsPannel.getWaveDelaySlider().handleEvent(*event, m_window);
+                    m_settingsPannel.getPerWaveSlider().handleEvent(*event, m_window);
                 }
                 else {
                     m_settingsPannel.getMaxWordLengthSlider().handleEvent(*event, m_window);
@@ -134,9 +100,12 @@ auto Game::run() -> void
         }
 
         if (m_gamestate == GameState::SETTINGS) {
-            setDifficulty(m_settingsPannel.getDifficulty());
+            setDifficulty();
             setFont(m_settingsPannel.getFont());
         }
+
+        // difficulty.show();
+
 
         m_window.clear();
         m_window.draw(m_background);
@@ -173,7 +142,7 @@ auto Game::run() -> void
             }
         } else {
             if (!errorQueue.empty()) {
-                show_error(errorQueue.front());
+                displayError(errorQueue.front());
                 errorQueue.pop();
             }
         }
@@ -296,7 +265,7 @@ auto Game::handle(const sf::Event::KeyPressed& keyPress) -> void{
 
 // CONFIGS
 
-auto Game::config_castle(const sf::Texture& texture) -> void {
+auto Game::configCastle(const sf::Texture& texture) -> void {
     m_castle.setScale({0.75, 0.75});
     m_castle.setPosition({WINDOW_SIZE.x/2, WINDOW_SIZE.y/2 - 10});
     m_castle.setTexture(texture);
@@ -309,7 +278,7 @@ auto Game::config_castle(const sf::Texture& texture) -> void {
     m_castle.move({-offsetX, -offsetY});
 }
 
-auto Game::config_background() -> void {
+auto Game::configBackground() -> void {
     auto windowSize = m_window.getSize();
     auto rect = m_background.getLocalBounds();
 
@@ -328,8 +297,89 @@ auto Game::config_background() -> void {
     m_background.setPosition({-offsetX, -offsetY});
 }
 
-auto Game::config_round() -> void {
-    config_castle(m_castle_texture);
+auto Game::configDecorations() -> void {
+    auto params = std::vector<std::pair<sf::Vector2f, float>>{
+
+        // UPPER LEFT
+
+        {{100, 150}, 0.7f},
+        {{150, 230}, 0.4f},
+        {{90, 195}, 0.5f},
+
+        {{200, 170}, 0.7f},
+        {{190, 215}, 0.5f},
+        {{250, 160}, 0.7f},
+        {{300, 240}, 0.4f},
+        {{260, 205}, 0.5f},
+        {{250, 250}, 0.4f},
+
+        // UPPER RIGHT
+
+        {{960, 70}, 0.7f},
+        {{925, 75}, 0.6f},
+        {{740, 30}, 0.7f},
+        {{735, 30}, 0.45f},
+
+
+        {{100, 150}, 0.7f},
+        {{150, 230}, 0.4f},
+        {{90, 195}, 0.5f},
+
+        // MIDDLE RIGHT
+
+        {{700, 370}, 0.7f},
+        {{590, 415}, 0.5f},
+        {{650, 360}, 0.7f},
+        {{700, 440}, 0.4f},
+        {{660, 405}, 0.5f},
+        {{650, 450}, 0.4f},
+
+        {{860, 405}, 0.5f},
+        {{850, 450}, 0.4f},
+
+
+        // MIDDLE MIDDLE
+
+        {{400, 570}, 0.7f},
+        {{290, 615}, 0.5f},
+        {{350, 560}, 0.7f},
+        {{400, 640}, 0.4f},
+        {{360, 605}, 0.5f},
+        {{350, 650}, 0.4f},
+        {{550, 580}, 0.65f},
+
+        {{860, 405}, 0.5f},
+        {{850, 450}, 0.4f},
+
+
+        // MIDDLE LEFT
+
+        {{390, 0}, 0.7f},
+        {{280, 45}, 0.5f},
+        {{440, 0}, 0.7f},
+        {{490, 40}, 0.4f},
+        {{80, 45}, 0.5f},
+        {{340, 50}, 0.4f},
+        {{540, 30}, 0.65f},
+
+        // LOWER LEFT
+
+        {{70, 400}, 0.65f},
+        {{60, 430}, 0.5f},
+
+        };
+    for (auto& param : params) {
+        auto decoration = AnimatedSprite(m_tree_texture, 6, 0.16f);
+        decoration.setPosition(param.first);
+        decoration.scale({param.second, param.second});
+
+        m_decorations.push_back(decoration);
+    }
+
+}
+
+auto Game::configRound() -> void {
+    configCastle(m_castle_texture);
     m_typer = Typer();
     m_spawner = Spawner(difficulty.spawnDelay, difficulty.spawnPerWave);
     auto words = m_general_glossary.get_random_words(m_round_number*5 + 5, m_settingsPannel.getMinWordLengthSlider().getValue(), m_settingsPannel.getMaxWordLengthSlider().getValue());
@@ -364,19 +414,59 @@ auto Game::config_round() -> void {
                 animated_sprite,
                 word,
                 m_font,
-                m_settingsPannel.getFontSizeSlider().getValue(),
+                25,
                 difficulty.baseSpeed
             )
         );
     }
 }
 
+
+// Drawing components and entities
+auto Game::drawEnemies(std::optional<float> deltaTime) -> void {
+    for (auto& [_, queue] : m_typer.glossary.get_glossary()) {
+        for (auto& enemy : queue ) {
+            if (!enemy.is_active()) {
+                if (deltaTime) {
+                    enemy.update(m_round_number, *deltaTime);
+                }
+                m_window.draw(enemy);
+            }
+            if (enemy.collides(m_castle)) {
+                m_gamestate = GameState::GAME_OVER;
+                configCastle(m_destroyed_castle_texture);
+            }
+        }
+    }
+
+    if (m_typer.active_enemy) {
+        if (deltaTime) {
+            m_typer.active_enemy->update(m_round_number, *deltaTime);
+        }
+        m_window.draw(*m_typer.active_enemy);
+        if (m_typer.active_enemy->collides(m_castle)) {
+            m_gamestate = GameState::GAME_OVER;
+            configCastle(m_destroyed_castle_texture);
+        }
+    }
+
+}
+
+auto Game::drawDecorations(std::optional<float> deltaTime) -> void {
+    for (auto& decoration : m_decorations) {
+        if (deltaTime) {
+            decoration.update(*deltaTime);
+        }
+        m_window.draw(decoration);
+    }
+}
+
 auto Game::displayMenuScene(const sf::Drawable* menu, bool to_draw_enemies) -> void {
     m_clock.restart();
 
-    draw_decorations(std::nullopt);
+    drawDecorations(std::nullopt);
     if (to_draw_enemies) {
-        draw_enemies(std::nullopt);
+        drawEnemies(std::nullopt);
     }
     m_window.draw(*menu);
 }
@@ -395,100 +485,27 @@ auto Game::displayGameScene() -> void {
 
     auto deltaTime = m_clock.restart().asSeconds();
 
-    draw_decorations(deltaTime);
+    drawDecorations(deltaTime);
 
-    draw_enemies(deltaTime);
+    drawEnemies(deltaTime);
     m_window.draw(m_hud);
 
     if (m_typer.glossary.empty() && m_spawner.empty()) {
         m_round_number++;
         m_hud.setRound(m_round_number);
-        config_round();
+        configRound();
     }
-
 }
 
-auto Game::config_decorations() -> void {
-    auto params = std::vector<std::pair<sf::Vector2f, float>>{
-
-    // UPPER LEFT
-
-    {{100, 150}, 0.7f},
-    {{150, 230}, 0.4f},
-    {{90, 195}, 0.5f},
-
-    {{200, 170}, 0.7f},
-    {{190, 215}, 0.5f},
-    {{250, 160}, 0.7f},
-    {{300, 240}, 0.4f},
-    {{260, 205}, 0.5f},
-    {{250, 250}, 0.4f},
-
-    // UPPER RIGHT
-
-    {{960, 70}, 0.7f},
-    {{925, 75}, 0.6f},
-    {{740, 30}, 0.7f},
-    {{735, 30}, 0.45f},
-
-
-    {{100, 150}, 0.7f},
-    {{150, 230}, 0.4f},
-    {{90, 195}, 0.5f},
-
-    // MIDDLE RIGHT
-
-    {{700, 370}, 0.7f},
-    {{590, 415}, 0.5f},
-    {{650, 360}, 0.7f},
-    {{700, 440}, 0.4f},
-    {{660, 405}, 0.5f},
-    {{650, 450}, 0.4f},
-
-    {{860, 405}, 0.5f},
-    {{850, 450}, 0.4f},
-
-
-    // MIDDLE MIDDLE
-
-    {{400, 570}, 0.7f},
-    {{290, 615}, 0.5f},
-    {{350, 560}, 0.7f},
-    {{400, 640}, 0.4f},
-    {{360, 605}, 0.5f},
-    {{350, 650}, 0.4f},
-    {{550, 580}, 0.65f},
-
-    {{860, 405}, 0.5f},
-    {{850, 450}, 0.4f},
-
-
-    // MIDDLE LEFT
-
-    {{390, 0}, 0.7f},
-    {{280, 45}, 0.5f},
-    {{440, 0}, 0.7f},
-    {{490, 40}, 0.4f},
-    {{80, 45}, 0.5f},
-    {{340, 50}, 0.4f},
-    {{540, 30}, 0.65f},
-
-    // LOWER LEFT
-
-    {{70, 400}, 0.65f},
-    {{60, 430}, 0.5f},
-
-    };
-    for (auto& param : params) {
-        auto decoration = AnimatedSprite(m_tree_texture, 6, 0.16f);
-        decoration.setPosition(param.first);
-        decoration.scale({param.second, param.second});
-
-        m_decorations.push_back(decoration);
-    }
-
+void Game::displayError(const std::string& message) {
+    errorBox.setMessage(message);
+    errorBox.setPosition({165, 0 });
+    m_showingError = true;
+    m_errorClock.restart();
 }
 
+
+// filesystem operations
 
 auto Game::loadHighestScore() -> int {
     auto path = "saves/highest_score.txt";
@@ -531,55 +548,22 @@ Game::~Game() {
     m_settingsPannel.saveToFile("saves/settings.txt");
 }
 
-void Game::show_error(const std::string& message) {
-    errorBox.setMessage(message);
-    errorBox.setPosition({165, 0 });
-    m_showingError = true;
-    m_errorClock.restart();
-}
-
 auto Game::setFont(const std::string& font) -> void {
     if (font == "Arial") {
         m_font.openFromFile("assets/fonts/arial.ttf");
-    } else if (font == "Pixel") {
+    } else if (font == "Sans") {
         m_font.openFromFile("assets/fonts/pixelify-sans.ttf");
+    } else if (font == "Miners") {
+        m_font.openFromFile("assets/fonts/pixelminers.otf");
+    } else if (font == "64") {
+        m_font.openFromFile("assets/fonts/sixtyfour.ttf");
     }
 }
 
-auto Game::setDifficulty(const std::string& difficulty) -> void {
-
-    auto baseSpeed = int();
-    auto spawnPerWave = int();
-    auto spawnDelay = int();
-    auto scoreMultiplier = int();
-
-    if (difficulty == "Medium") {
-        baseSpeed = 50;
-        spawnPerWave = 2;
-        spawnDelay = 4;
-        scoreMultiplier = 1.2;
-    } else if (difficulty == "Hard") {
-        baseSpeed = 65;
-        spawnPerWave = 3;
-        spawnDelay = 3.5;
-        scoreMultiplier = 1.5;
-    } else if (difficulty == "Extreme") {
-        baseSpeed = 80;
-        spawnPerWave = 4;
-        spawnDelay = 3;
-        scoreMultiplier = 2.3;
-
-    }
-    // default difficulty is easy
-    else {
-        baseSpeed = 40;
-        spawnPerWave = 2;
-        spawnDelay = 5;
-        scoreMultiplier = 1.0;
-    }
-
-    this->difficulty.baseSpeed = baseSpeed;
-    this->difficulty.spawnPerWave = spawnPerWave;
-    this->difficulty.spawnDelay = spawnDelay;
-    this->difficulty.scoreMultiplier = scoreMultiplier;
+auto Game::setDifficulty() -> void {
+    difficulty.update(
+        m_settingsPannel.getBaseSpeedSlider().getValue(),
+        m_settingsPannel.getPerWaveSlider().getValue(),
+        m_settingsPannel.getWaveDelaySlider().getValue()
+    );
 }

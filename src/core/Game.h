@@ -2,20 +2,19 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Difficulty.h"
-#include "GameState.h"
-#include "../entities/components/Button.h"
-#include "../entities/components/ErrorBox.h"
-#include "../entities/components/GameOverMenu.h"
-#include "../entities/components/MainMenu.h"
-#include "../entities/components/PauseMenu.h"
-#include "../entities/components/Hud.h"
-#include "../entities/components/Settings.h"
+#include "config/Difficulty.h"
+#include "states/GameState.h"
+#include "../entities/components/errors/ErrorBox.h"
+#include "../entities/components/menus/GameOverMenu.h"
+#include "../entities/components/menus/MainMenu.h"
+#include "../entities/components/menus/PauseMenu.h"
+#include "../entities/components/hud/Hud.h"
+#include "../entities/components/settings/Settings.h"
 #include "../entities/utils/PausableClock.h"
-#include "../entities/enemy/Spawner.h"
-#include "../logic/GeneralGlossary.h"
-#include "../logic/RoundGlossary.h"
-#include "../logic/Typer.h"
+#include "../entities/enemy/spawn/Spawner.h"
+#include "../logic/glossaries/GeneralGlossary.h"
+#include "../logic/glossaries/RoundGlossary.h"
+#include "../logic/typer/Typer.h"
 
 class Game
 {
@@ -26,7 +25,7 @@ public:
 
 private:
 
-    auto start_game() -> void;
+    auto startGame() -> void;
 
     // event handlers
 
@@ -39,13 +38,13 @@ private:
     template <typename T>
     auto handle(const T& event) -> void;
 
-    auto draw_enemies(std::optional<float> deltaTime) -> void;
-    auto draw_decorations(std::optional<float> deltaTime) -> void;
+    auto drawEnemies(std::optional<float> deltaTime) -> void;
+    auto drawDecorations(std::optional<float> deltaTime) -> void;
 
-    auto config_background() -> void;
-    auto config_round() -> void;
-    auto config_castle(const sf::Texture& texture) -> void;
-    auto config_decorations() -> void;
+    auto configBackground() -> void;
+    auto configRound() -> void;
+    auto configCastle(const sf::Texture& texture) -> void;
+    auto configDecorations() -> void;
 
     auto displayMenuScene(const sf::Drawable *menu, bool to_draw_enemies) -> void;
     auto displayGameScene() -> void;
@@ -53,10 +52,10 @@ private:
     auto loadHighestScore() -> int;
     auto saveHighestScore() -> void;
 
-    void show_error(const std::string& message);
+    void displayError(const std::string& message);
 
     auto setFont(const std::string &font) -> void;
-    auto setDifficulty(const std::string& difficulty) -> void;
+    auto setDifficulty() -> void;
 
     // Member variables
     sf::RenderWindow m_window;

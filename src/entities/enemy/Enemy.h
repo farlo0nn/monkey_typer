@@ -1,11 +1,11 @@
 #pragma once
 
-#include "EnemyState.h"
-#include "../../logic/Word.h"
-#include "HighlightedLabel.h"
+#include "spawn/EnemyState.h"
+#include "../../logic/word/Word.h"
+#include "label/HighlightedLabel.h"
 #include <SFML/Graphics.hpp>
 
-#include "AnimatedSprite.h"
+#include "sprite/AnimatedSprite.h"
 
 class Enemy : public sf::Drawable {
 public:
