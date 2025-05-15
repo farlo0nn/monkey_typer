@@ -1,6 +1,6 @@
 #include "FontArrowMenu.h"
 
-FontArrowMenu::FontArrowMenu(const sf::Vector2f& position) : BaseArrowMenu(position, {"Arial", "Pixel", "Miners", "64"}) {}
+FontArrowMenu::FontArrowMenu(const sf::Vector2f& position) : BaseArrowMenu(position, {"Arial", "Sans", "Miners", "64"}) {}
 
 auto FontArrowMenu::getValue() const -> std::string {
     return values[curValId];

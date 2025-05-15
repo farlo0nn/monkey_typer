@@ -27,10 +27,8 @@ auto AnimatedSprite::setTextureDirection(Directions directions) -> void {
 }
 
 AnimatedSprite::AnimatedSprite(sf::Texture& texture, int frameCount)
-    : Sprite(texture)
-{
-    AnimatedSprite(texture, frameCount, 0.1f);
-}
+    :  AnimatedSprite(texture, frameCount, 0.1f)
+{}
 
 auto AnimatedSprite::update(float deltaTime) -> void {
     spriteElapsedTime += deltaTime;
@@ -79,6 +77,7 @@ namespace as {
 
         return textures.emplace(sprite, std::move(texture)).first->second;;
     }
+
 
     auto getAnimatedSprite(AnimatedSprites sprite, float frameTime) -> AnimatedSprite {
         auto frameCount = int();

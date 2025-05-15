@@ -31,7 +31,6 @@ Game::Game()
           [&]() { this->m_gamestate = GameState::MENU; }
       ),
       m_hud({WINDOW_SIZE.x / 2, WINDOW_SIZE.y - 20}),
-      m_font{FONT_PATH},
       errorBox(m_font, ""),
       m_instructions{m_font, "Press Enter to change handler type", 24},
       m_spawner(5, 3),
@@ -49,7 +48,7 @@ Game::Game()
     m_window.setVerticalSyncEnabled(true);
     m_instructions.setFillColor(sf::Color::White);
     m_instructions.setStyle(sf::Text::Bold);
-    m_general_glossary.load(WORDS_PATH);
+    m_general_glossary.load("assets/words.txt");
     m_hud.setHighestScore(loadHighestScore());
 
     m_settingsPannel.getToMenu().onRelease([&]() {
@@ -408,7 +407,7 @@ auto Game::configRound() -> void {
 
         auto animated_sprite = getAnimatedSprite(utils::get_random_enum_option<as::AnimatedSprites>());
         animated_sprite.setTextureDirection(state.texture_direction);
-
+        std::cout << m_font.getInfo().family << std::endl;
         m_spawner.enqueue(
             Enemy(
                 state,
