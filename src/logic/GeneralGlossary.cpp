@@ -7,11 +7,11 @@
 
 
 GeneralGlossary::GeneralGlossary() {};
-GeneralGlossary::GeneralGlossary(const std::vector<Word> &words) : __words(words) {}
+GeneralGlossary::GeneralGlossary(const std::vector<Word> &words) : words(words) {}
 
 
 auto GeneralGlossary::get_words() -> std::vector<Word> {
-    return __words;
+    return words;
 }
 
 auto GeneralGlossary::load(const std::string& path) -> void {
@@ -23,7 +23,7 @@ auto GeneralGlossary::load(const std::string& path) -> void {
 
         auto word = std::string();
         while (file >> word) {
-            __words.push_back({word.at(0), word, {0, 0}});
+            words.push_back({word.at(0), word, {0, 0}});
         }
 
     }
@@ -33,13 +33,41 @@ auto GeneralGlossary::load(const std::string& path) -> void {
     }
 }
 
-auto GeneralGlossary::get_random_words(const int& n) -> std::vector<Word> {
-    auto result = std::vector<Word>();
-    std::ranges::sample(
-    __words,
-    std::back_inserter(result),
-        n,
-        std::mt19937{std::random_device{}()}
+auto GeneralGlossary::get_random_words(const int& n, int minLength, int maxLength) -> std::vector<Word> {
+    auto filtered = std::vector<Word>();
+
+    std::ranges::copy_if(
+        words,
+        std::back_inserter(filtered),
+        [minLength, maxLength](const int& len) {
+            return len >= minLength && len <= maxLength;
+        },
+        [](const Word& word) {
+            return word.value.size();
+        }
     );
+
+    if (filtered.empty()) {
+        return {};
+    }
+
+    std::vector<Word> result;
+    auto numberGenerator = std::mt19937(std::random_device{}());
+
+
+
+    if (filtered.size() >= n) {
+        // takes sample without duplicates
+        std::ranges::sample(filtered, std::back_inserter(result), n, numberGenerator);
+    } else {
+
+        // takes sample with duplicates
+        result.reserve(n);
+        for (int i = 0; i < n; ++i) {
+            result.push_back(filtered[numberGenerator() % filtered.size()]);
+        }
+    }
+
     return result;
 }
+

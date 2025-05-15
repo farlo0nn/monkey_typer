@@ -3,5 +3,5 @@
 
 class GameOverMenu : public BaseMenu {
 public:
-    GameOverMenu(const Callback &onRestart, const Callback &onQuit);
+    GameOverMenu(const Callback &onRestart, const Callback &onToMenu);
 };

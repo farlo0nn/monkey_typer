@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Difficulty.h"
 #include "GameState.h"
 #include "../entities/components/Button.h"
 #include "../entities/components/ErrorBox.h"
@@ -25,37 +26,37 @@ public:
 
 private:
 
+    auto start_game() -> void;
+
     // event handlers
-    auto  handle(const sf::Event::Closed&) -> void;
+
+
+    auto handle(const sf::Event::Closed&) -> void;
     auto handle(const sf::Event::KeyPressed& keyPress) -> void;
-    // auto handle(const sf::Event::MouseMoved& mouseMoved) -> void;
     auto handle(const sf::Event::MouseButtonPressed& mousePressed) -> void;
     auto handle(const sf::Event::MouseButtonReleased& mouseReleased) -> void;
     auto handle(const sf::Event::TextEntered& textEntered) -> void;
+    template <typename T>
+    auto handle(const T& event) -> void;
 
-    // void handle(const sf::Event::TouchBegan& touchBegan);
     auto draw_enemies(std::optional<float> deltaTime) -> void;
     auto draw_decorations(std::optional<float> deltaTime) -> void;
 
-    template <typename T>
-    auto handle(const T&) -> void;
-
     auto config_background() -> void;
     auto config_round() -> void;
-
-    auto displayMenuScene(const sf::Drawable *menu, bool to_draw_enemies) -> void;
-
-    auto displayGameScene() -> void;
-
     auto config_castle(const sf::Texture& texture) -> void;
     auto config_decorations() -> void;
-    auto config_main_menu() -> void;
+
+    auto displayMenuScene(const sf::Drawable *menu, bool to_draw_enemies) -> void;
+    auto displayGameScene() -> void;
 
     auto loadHighestScore() -> int;
     auto saveHighestScore() -> void;
 
-    auto start_game() -> void;
     void show_error(const std::string& message);
+
+    auto setFont(const std::string &font) -> void;
+    auto setDifficulty(const std::string& difficulty) -> void;
 
     // Member variables
     sf::RenderWindow m_window;
@@ -64,7 +65,6 @@ private:
     GameOverMenu m_gameOverMenu;
     Hud m_hud;
     sf::Font m_font;
-    unsigned int m_fontsize;
     sf::Texture m_enemy_texture;
     sf::Texture m_background_texture;
     sf::Sprite m_background;
@@ -81,11 +81,12 @@ private:
     GameState m_gamestate;
     sf::Texture m_tree_texture;
     std::vector<AnimatedSprite> m_decorations;
-    int score;
+    double score;
     PausableClock m_wpm_clock;
     Settings m_settingsPannel;
     sf::Clock m_clock;
     sf::Clock m_errorClock;
     bool m_showingError = false;
     const float m_errorDisplayTime = 3.f;
+    Difficulty difficulty;
 };

@@ -31,7 +31,7 @@ EnemyState::EnemyState(SpawnPosition position, Directions texture_direction) {
             add_waypoint({8.7*60.f, WINDOW_SIZE.y/2});
         break;
         case SpawnPosition::LOWER_RIGHT:
-            this->position = {13*60.f, 12*60.f};
+            this->position = {13*60.f, 11*60.f};
             add_waypoint({13*60.f, 9.3*60.f});
             add_waypoint({8.7*60.f, 9.3*60.f});
             add_waypoint({8.7*60.f, WINDOW_SIZE.y/2});

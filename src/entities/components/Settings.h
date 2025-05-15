@@ -48,11 +48,14 @@ class Settings : public sf::Drawable {
 
 public:
 
-    Settings(const std::string& path_to_settings);
+    Settings();
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     auto getFontSizeSlider() -> Slider&;
+    auto getDifficulty() const -> std::string;
     auto getMaxWordLengthSlider() -> Slider&;
     auto getMinWordLengthSlider() -> Slider&;
+    auto getFont() const -> std::string;
+
     auto loadFromFile(const std::string& path) -> void;
     auto saveToFile(const std::string& path) const -> void;
     auto update() -> void;

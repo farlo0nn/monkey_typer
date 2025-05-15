@@ -7,7 +7,7 @@
 #include <iostream>
 #include "../../Constants.h"
 
-Settings::Settings(const std::string& path_to_settings)
+Settings::Settings()
     : background_texture("assets/ui/menu/mainMenuBanner.png"),
       button_active_texture("assets/ui/menu/mainMenuButtonPressed.png"),
       button_inactive_texture("assets/ui/menu/mainMenuButton.png"),
@@ -53,7 +53,6 @@ Settings::Settings(const std::string& path_to_settings)
     minWordLengthDisplay.setPosition({WINDOW_SIZE.x/2 - 140, WINDOW_SIZE.y/2 - 150});
     minWordLengthDisplay.setOutlineThickness(2);
     minWordLengthDisplay.setCharacterSize(characterSize);
-    loadFromFile(path_to_settings);
     update();
 }
 
@@ -154,11 +153,12 @@ auto Settings::loadFromFile(const std::string& path) -> void {
 auto Settings::saveToFile(const std::string& path) const -> void {
 
     std::cout << "Saving settings to " << path << "..." << std::endl;
+    std::cout << difficultyArrowMenu.getValue() << std::endl;
     try {
         auto file = std::fstream(path);
         file << fontSizeDisplay.getValue() << std::endl;
-        file << fontArrowMenu.getValue() << std::endl;
         file << difficultyArrowMenu.getValue() << std::endl;
+        file << fontArrowMenu.getValue() << std::endl;
         file << minWordLengthDisplay.getValue() << std::endl;
         file << maxWordLengthDisplay.getValue() << std::endl;
     } catch (const std::exception& e) {
@@ -197,3 +197,10 @@ auto Settings::valid() const -> std::pair<bool, std::optional<std::string>> {
     return {true, std::nullopt};
 };
 
+auto Settings::getDifficulty() const -> std::string {
+    return difficultyArrowMenu.getValue();
+}
+
+auto Settings::getFont() const -> std::string {
+    return fontArrowMenu.getValue();
+}

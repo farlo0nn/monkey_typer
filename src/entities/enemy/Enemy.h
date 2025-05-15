@@ -10,7 +10,7 @@
 class Enemy : public sf::Drawable {
 public:
 
-    Enemy(const EnemyState &state, const AnimatedSprite &sprite,  const Word& word, const sf::Font& font, unsigned int fontsize);
+    Enemy(const EnemyState &state, const AnimatedSprite &sprite,  const Word& word, const sf::Font& font, unsigned int fontsize, int base_speed);
 
     auto update(int round, float deltaTime) -> void;
 
@@ -37,6 +37,7 @@ private:
     Word word;
     size_t typing_index;
     bool active_target;
+    int base_speed;
 
     auto update_label_position() -> void;
 

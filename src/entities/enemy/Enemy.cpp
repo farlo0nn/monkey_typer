@@ -4,18 +4,18 @@
 #include <SFML/Graphics.hpp>
 #include "../../Constants.h"
 
-Enemy::Enemy(const EnemyState &state, const AnimatedSprite &sprite,  const Word& word, const sf::Font& font, unsigned int fontsize)
+Enemy::Enemy(const EnemyState &state, const AnimatedSprite &sprite,  const Word& word, const sf::Font& font, unsigned int fontsize, int base_speed)
     :  sprite(sprite), state(state), word(word), label(font, fontsize), typing_index(0)
 {
     set_position(state.position);
 
-
+    this->base_speed = base_speed;
     label.setString(word.value);
     label.setColors(sf::Color::Green, sf::Color::White);
 }
 
 auto Enemy::update(int round, float deltaTime) -> void {
-    auto velocity = BASE_SPEED * (0.4f * round);
+    auto velocity = base_speed * (0.4f * round);
     auto move_to = sf::Vector2f{
         state.direction.x * velocity * deltaTime,
         state.direction.y * velocity * deltaTime

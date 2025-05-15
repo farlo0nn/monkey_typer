@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 file(COPY assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+file(COPY saves DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 
 include(FetchContent)
@@ -34,10 +35,6 @@ add_executable(Funzies src/main.cpp
         src/entities/enemy/Enemy.h
         src/core/Game.cpp
         src/core/Game.h
-        src/modes/MenuMode.cpp
-        src/modes/MenuMode.h
-        src/modes/PlayingMode.cpp
-        src/modes/PlayingMode.h
         src/logic/GeneralGlossary.cpp
         src/logic/GeneralGlossary.h
         src/logic/Word.cpp
@@ -88,10 +85,13 @@ add_executable(Funzies src/main.cpp
         src/entities/components/BaseArrowMenu.h
         src/entities/components/DifficultyArrowMenu.cpp
         src/entities/components/DifficultyArrowMenu.h
-        src/core/Difficulties.h
         src/core/Fonts.h
         src/entities/components/FontArrowMenu.cpp
         src/entities/components/FontArrowMenu.h
+        src/entities/components/ErrorBox.cpp
+        src/entities/components/ErrorBox.h
+        src/core/Difficulty.cpp
+        src/core/Difficulty.h
 )
 
 target_link_libraries(Funzies PRIVATE SFML::Graphics fmt)
