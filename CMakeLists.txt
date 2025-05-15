@@ -93,8 +93,8 @@ add_executable(Funzies src/main.cpp
         src/entities/components/settings/Settings.cpp
         src/entities/components/settings/Settings.h
 
-        src/entities/utils/PausableClock.cpp
-        src/entities/utils/PausableClock.h
+        src/core/timing/PausableClock.cpp
+        src/core/timing/PausableClock.h
 
         src/logic/typer/TypeStat.cpp
         src/logic/typer/TypeStat.h
@@ -116,6 +116,8 @@ add_executable(Funzies src/main.cpp
         src/entities/components/errors/ErrorBox.h
 
         src/entities/components/utils/utils.h
+        src/core/io/FileManager.cpp
+        src/core/io/FileManager.h
 )
 
 target_link_libraries(Funzies PRIVATE SFML::Graphics fmt)

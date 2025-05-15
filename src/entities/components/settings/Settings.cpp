@@ -1,13 +1,10 @@
-//
-// Created by Belinskiy Oleksandr on 09.05.2025.
-//
-
 #include "Settings.h"
 #include <fstream>
 #include <iostream>
 
 #include "../utils/utils.h"
 #include "../../../Constants.h"
+#include "../../../core/io/FileManager.h"
 
 Settings::Settings()
     : background_texture("assets/ui/menu/mainMenuBanner.png"),
@@ -125,62 +122,42 @@ auto Settings::getToMenu() -> Button &  { return toMenu; }
 
 auto Settings::loadFromFile(const std::string& path) -> void {
 
-    // LOADING LOGIC
-    std::cout << "Loading " << path << "..." << std::endl;
+    std::cout << "Loading from " << path << "..." << std::endl;
+    if (!FileManager::pathExists(path)) {
+        throw std::invalid_argument("Path for settings does not exist");
+    }
+
     try {
-        auto file = std::fstream(path);
+        auto lines = FileManager::readLines(path);
+        baseSpeedSlider.setValue(std::stoi(lines[0]));
+        waveDelaySlider.setValue(std::stoi(lines[1]));
+        perWaveSlider.setValue(std::stoi(lines[2]));
 
-        auto baseSpeedRaw = std::string();
-        auto waveDelayRaw = std::string();
-        auto perWaveRaw = std::string();
-        file >> baseSpeedRaw;
-        file >> waveDelayRaw;
-        file >> perWaveRaw;
-
-        auto baseSpeed = std::stoi(baseSpeedRaw);
-        auto waveDelay = std::stoi(waveDelayRaw);
-        auto perWave = std::stoi(perWaveRaw);
-
-        auto font = std::string();
-        file >> font;
-
-        auto rawMinLength = std::string();
-        file >> rawMinLength;
-        auto minLength = std::stoi(rawMinLength);
-
-        auto rawMaxLength = std::string();
-        file >> rawMaxLength;
-        auto maxLength = std::stoi(rawMaxLength);
-
-        baseSpeedSlider.setValue(baseSpeed);
-        baseSpeedDisplay.setValue(baseSpeed);
-        waveDelaySlider.setValue(waveDelay);
-        waveDelayDisplay.setValue(waveDelay);
-        perWaveSlider.setValue(perWave);
-        perWaveDisplay.setValue(perWave);
-
-        fontArrowMenu.setValue(font);
-        minWordLengthSlider.setValue(minLength);
-        maxWordLengthSlider.setValue(maxLength);
+        fontArrowMenu.setValue(lines[3]);
+        minWordLengthSlider.setValue(std::stoi(lines[4]));
+        maxWordLengthSlider.setValue(std::stoi(lines[5]));
 
     } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
     }
-
-};
+}
 
 auto Settings::saveToFile(const std::string& path) const -> void {
 
     std::cout << "Saving settings to " << path << "..." << std::endl;
+    if (!FileManager::pathExists(path)) {
+        throw std::invalid_argument("Path for settings does not exist");
+    }
 
     try {
-        auto file = std::fstream(path);
-        file << baseSpeedDisplay.getValue() << std::endl;
-        file << waveDelayDisplay.getValue() << std::endl;
-        file << perWaveDisplay.getValue() << std::endl;
-        file << fontArrowMenu.getValue() << std::endl;
-        file << minWordLengthDisplay.getValue() << std::endl;
-        file << maxWordLengthDisplay.getValue() << std::endl;
+        FileManager::writeLines(path, {
+            std::to_string(baseSpeedDisplay.getValue()),
+            std::to_string(waveDelayDisplay.getValue()),
+            std::to_string(perWaveDisplay.getValue()),
+            fontArrowMenu.getValue(),
+            std::to_string(minWordLengthDisplay.getValue()),
+            std::to_string(maxWordLengthDisplay.getValue()),
+        });
     } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
     }

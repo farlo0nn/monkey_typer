@@ -3,19 +3,6 @@
 #include <filesystem>
 #include "../word/Word.h"
 
-
-namespace {
-    namespace fs = std::filesystem;
-
-    bool path_exists(const std::string& path) {
-        try {
-            return fs::exists(fs::path(path));
-        } catch (const fs::filesystem_error& e){
-            return false;
-        }
-    }
-}
-
 class GeneralGlossary {
     std::vector<Word>words;
 public:

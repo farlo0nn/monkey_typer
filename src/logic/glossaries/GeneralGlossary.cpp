@@ -1,9 +1,10 @@
 #include "GeneralGlossary.h"
-#include <ios>
 #include <fstream>
 #include <algorithm>
 #include <iostream>
 #include <random>
+
+#include "../../core/io/FileManager.h"
 
 
 GeneralGlossary::GeneralGlossary() {};
@@ -17,18 +18,17 @@ auto GeneralGlossary::get_words() -> std::vector<Word> {
 auto GeneralGlossary::load(const std::string& path) -> void {
 
     std::cout << "Loading " << path << "..." << std::endl;
-    if (path_exists(path)) {
-
-        auto file = std::fstream(path);
-
-        auto word = std::string();
-        while (file >> word) {
-            words.push_back({word.at(0), word, {0, 0}});
+    if (FileManager::pathExists(path)) {
+        try {
+            auto word = std::string();
+            for (auto line : FileManager::readLines(path)) {
+                words.push_back({line.at(0), line, {0, 0}});
+            }
+        } catch (const std::exception &e) {
+            std::cerr << e.what() << std::endl;
         }
-
     }
     else {
-        // throw std::runtime_error("Could not open file " + path);
         std::cout << "Could not open file " << path << std::endl;
     }
 }

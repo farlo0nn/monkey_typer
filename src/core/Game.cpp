@@ -9,9 +9,10 @@
 #include "../entities/enemy/spawn/EnemySpawnPositions.h"
 
 #include "../utils.cpp"
+#include "io/FileManager.h"
 
 Game::Game()
-    : m_window{sf::VideoMode(WINDOW_SIZE), "MonkeyTyper", sf::Style::None},
+    : m_window{sf::VideoMode(WINDOW_SIZE), "MonkeyTyper", sf::Style::Close},
       m_mainMenu(
           [&]() { startGame(); },
           [&]() { m_gamestate = GameState::SETTINGS; },
@@ -382,7 +383,7 @@ auto Game::configRound() -> void {
     configCastle(m_castle_texture);
     m_typer = Typer();
     m_spawner = Spawner(difficulty.spawnDelay, difficulty.spawnPerWave);
-    auto words = m_general_glossary.get_random_words(m_round_number*5 + 5, m_settingsPannel.getMinWordLengthSlider().getValue(), m_settingsPannel.getMaxWordLengthSlider().getValue());
+    auto words = m_general_glossary.get_random_words((m_round_number + 1)*m_settingsPannel.getPerWaveSlider().getValue(), m_settingsPannel.getMinWordLengthSlider().getValue(), m_settingsPannel.getMaxWordLengthSlider().getValue());
 
 
     auto spawn_positions = std::vector<SpawnPosition>();
@@ -480,7 +481,7 @@ auto Game::displayGameScene() -> void {
         m_hud.setHighestScore(score);
     }
 
-    m_hud.setWPM(score / (5.f * (m_wpm_clock.getElapsedTime().asSeconds() / 60.f)));
+    m_hud.setWPM(score / (difficulty.scoreMultiplier * (5.f * (m_wpm_clock.getElapsedTime().asSeconds() / 60.f))));
 
 
     auto deltaTime = m_clock.restart().asSeconds();
@@ -508,38 +509,34 @@ void Game::displayError(const std::string& message) {
 // filesystem operations
 
 auto Game::loadHighestScore() -> int {
-    auto path = "saves/highest_score.txt";
-    std::cout << "Loading " << path << "..." << std::endl;
-    if (path_exists(path)) {
-
-        auto file = std::fstream(path);
-        auto word = std::string();
-
-        file >> word;
-        auto score = std::stoi(word);
-        std::cout << "Score: " << score << std::endl;
-        return score;
+    const auto path = "saves/highest_score.txt";
+    auto highest_score = int();
+    if (!FileManager::pathExists(path)) {
+        errorQueue.push("No saved highest score found.");
     }
     else {
-        // throw std::runtime_error("Could not open file " + path);
-        std::cout << "Could not open file " << path << std::endl;
+        try {
+            highest_score = std::stoi(FileManager::readLines(path)[0]);
+        } catch (const std::length_error& e) {
+            std::cout << e.what() << std::endl;
+        }
     }
-    return 0;
+    return highest_score;
 }
 
 auto Game::saveHighestScore() -> void {
-    auto path = "saves/highest_score.txt";
-    std::cout << "Loading " << path << "..." << std::endl;
-    if (path_exists(path)) {
+    const auto path = "saves/highest_score.txt";
 
-        auto file = std::fstream(path);
-        auto highestScore = std::to_string(m_hud.getHighestScore());
-
-        file << highestScore;
+    if (!FileManager::pathExists(path)) {
+        errorQueue.push("No file to save highest score found.");
     }
     else {
-        // throw std::runtime_error("Could not open file " + path);
-        std::cout << "Could not open file " << path << std::endl;
+        try {
+            auto highestScoreString = std::to_string(m_hud.getHighestScore());
+            FileManager::writeLines(path, {highestScoreString});
+        } catch (const std::length_error& e) {
+            std::cout << e.what() << std::endl;
+        }
     }
 }
 
