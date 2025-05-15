@@ -2,5 +2,8 @@
 
 enum class GameState {
     GAME,
-    MENU
+    MENU,
+    PAUSE,
+    SETTINGS,
+    GAME_OVER
 };

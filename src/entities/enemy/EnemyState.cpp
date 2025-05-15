@@ -1,16 +1,16 @@
 #include "./EnemyState.h"
 
 #include <queue>
-
 #include "../../Constants.h"
 
-EnemyState::EnemyState(SpawnPosition position) {
+EnemyState::EnemyState(SpawnPosition position, Directions texture_direction) {
 
-    this->path = std::queue<sf::Vector2f>();
+    this->texture_direction = texture_direction;
+    this->path = std::deque<sf::Vector2f>();
 
     switch (position) {
         case SpawnPosition::UPPER_LEFT:
-            this->position = {2.5*60, 0.f};
+            this->position = {2.4*60, 0.f};
             add_waypoint({2.5*60.f, 2.1*60.f});
             add_waypoint({8.7*60.f, 2.1*60.f});
             add_waypoint({8.7*60.f, WINDOW_SIZE.y/2});
@@ -31,7 +31,7 @@ EnemyState::EnemyState(SpawnPosition position) {
             add_waypoint({8.7*60.f, WINDOW_SIZE.y/2});
         break;
         case SpawnPosition::LOWER_RIGHT:
-            this->position = {13*60.f, 12*60.f};
+            this->position = {13*60.f, 11*60.f};
             add_waypoint({13*60.f, 9.3*60.f});
             add_waypoint({8.7*60.f, 9.3*60.f});
             add_waypoint({8.7*60.f, WINDOW_SIZE.y/2});
@@ -59,18 +59,12 @@ auto EnemyState::get_direction(sf::Vector2f c1, sf::Vector2f c2) -> sf::Vector2f
 }
 
 auto EnemyState::add_waypoint(sf::Vector2f point) -> void {
-    path.push(point);
-}
-
-auto EnemyState::update_path() -> void {
-    if (!path.empty()) {
-        direction = get_direction(position, path.front());
-    }
+    path.push_back(point);
 }
 
 auto EnemyState::advance_to_next_waypoint() -> void {
     if (!path.empty()) {
-        path.pop();
+        path.pop_front();
         if (!path.empty())
             direction = get_direction(position, path.front());
         else
@@ -84,3 +78,5 @@ auto EnemyState::has_reached_point() const -> bool {
     auto dy = position.y - path.front().y;
     return std::hypot(dx, dy) < 5.f;
 }
+
+

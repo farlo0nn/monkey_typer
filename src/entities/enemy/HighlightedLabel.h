@@ -3,9 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
-class HighlighedLabel : public sf::Drawable {
+class HighlightedLabel : public sf::Drawable {
 public:
-    HighlighedLabel(const sf::Font& font, unsigned int fontsize);
+    HighlightedLabel(const sf::Font& font, unsigned int fontsize);
 
     void setString(const std::string& str);
     void setFont(const sf::Font& font);
