@@ -4,7 +4,6 @@
 #include <iostream>
 #include <random>
 
-#include "states/GameMode.h"
 #include "../Constants.h"
 #include "../entities/enemy/spawn/EnemySpawnPositions.h"
 
@@ -179,7 +178,7 @@ auto Game::handle(const sf::Event::MouseButtonPressed& mousePressed) -> void {
     }
 
     if (currentMenu) {
-        for (auto& button : currentMenu->get_buttons()) {
+        for (auto& button : currentMenu->getButtons()) {
             if (button.getGlobalBounds().contains(sf::Vector2f(mousePressed.position))) {
                 button.click();
             }
@@ -227,7 +226,7 @@ auto Game::handle(const sf::Event::MouseButtonReleased& mouseReleased) -> void {
     }
 
     if (currentMenu) {
-        for (auto& button : currentMenu->get_buttons()) {
+        for (auto& button : currentMenu->getButtons()) {
             if (button.isClicked()) {
                 button.click();
             }
@@ -249,6 +248,7 @@ auto Game::handle(const sf::Event::TextEntered& textEntered) -> void {
         auto u = textEntered.unicode;
         auto c = static_cast<char>(u);
         auto typeStat = m_typer.type(c);
+        std::cout << typeStat.is_correct << " " << typeStat.is_word_typed << " " << typeStat.word_size << std::endl;
         if (typeStat.is_word_typed) {
             score += (typeStat.word_size) * difficulty.scoreMultiplier;
         };
@@ -405,9 +405,8 @@ auto Game::configRound() -> void {
         auto state = ENEMY_SPAWN_POSITIONS.at(pos);
         spawn_index++;
 
-        auto animated_sprite = getAnimatedSprite(utils::get_random_enum_option<as::AnimatedSprites>());
+        auto animated_sprite = getAnimatedSprite(utils::getRandomEnumOption<as::AnimatedSprites>());
         animated_sprite.setTextureDirection(state.texture_direction);
-        std::cout << m_font.getInfo().family << std::endl;
         m_spawner.enqueue(
             Enemy(
                 state,
@@ -424,7 +423,7 @@ auto Game::configRound() -> void {
 
 // Drawing components and entities
 auto Game::drawEnemies(std::optional<float> deltaTime) -> void {
-    for (auto& [_, queue] : m_typer.glossary.get_glossary()) {
+    for (auto& [_, queue] : m_typer.glossary.getGlossary()) {
         for (auto& enemy : queue ) {
             if (!enemy.is_active()) {
                 if (deltaTime) {
@@ -545,14 +544,21 @@ Game::~Game() {
 }
 
 auto Game::setFont(const std::string& font) -> void {
+
+    auto path = std::string();
+
     if (font == "Arial") {
-        m_font.openFromFile("assets/fonts/arial.ttf");
+        path = "assets/fonts/arial.ttf";
     } else if (font == "Sans") {
-        m_font.openFromFile("assets/fonts/pixelify-sans.ttf");
+        path = "assets/fonts/pixelify-sans.ttf";
     } else if (font == "Miners") {
-        m_font.openFromFile("assets/fonts/pixelminers.otf");
+        path = "assets/fonts/pixelminers.otf";
     } else if (font == "64") {
-        m_font.openFromFile("assets/fonts/sixtyfour.ttf");
+        path = "assets/fonts/sixtyfour.ttf";
+    }
+
+    if (!m_font.openFromFile(path)) {
+        errorQueue.push("Failed to open font file.");
     }
 }
 

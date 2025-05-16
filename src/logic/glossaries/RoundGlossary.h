@@ -19,11 +19,11 @@ public:
 
     auto add(const std::vector<Enemy>& enemies) -> void;
     auto add(const Enemy& enemy) -> void;
-    auto get_glossary() -> rg::enemy_glossary&;
-    auto get_enemy_number() const -> int;
+    auto getGlossary() -> rg::enemy_glossary&;
+    auto getEnemyNumber() const -> int;
     auto at(const char &index) -> std::deque<Enemy>&;
     auto has(const char &letter) -> bool;
     auto empty() -> bool;
     auto pop(char const& first_letter) -> void;
-    auto get_closest_enemy_by_letter(const char &letter) -> Enemy*;
+    auto getClosestEnemyByLetter(const char &letter) -> Enemy*;
 };

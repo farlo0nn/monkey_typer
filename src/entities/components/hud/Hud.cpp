@@ -10,7 +10,7 @@ Hud::Hud(const sf::Vector2f& position)
       highestScore(font, "Highest:", 0),
       round(font, "Round: ", 1)
 {
-    configure_component(background, position, 2, 1.3);
+    configureComponent(background, position, 2, 1.3);
     auto backgroundBounds = background.getLocalBounds();
     wpm.setValue(0);
     wpm.setPosition({position.x - backgroundBounds.size.x/2 + 450 ,position.y - backgroundBounds.size.y/2});
@@ -20,7 +20,7 @@ Hud::Hud(const sf::Vector2f& position)
 }
 
 template <typename T>
-auto Hud::configure_component(T& component, sf::Vector2f position, float scalex, float scaley) -> void {
+auto Hud::configureComponent(T& component, sf::Vector2f position, float scalex, float scaley) -> void {
     component.setOrigin({component.getLocalBounds().size.x / 2, component.getLocalBounds().size.y / 2});
     component.setPosition(position);
     component.setScale({scalex, scaley});

@@ -18,16 +18,16 @@ protected:
     float menuScale = 2.0f;
 
     template<typename  T>
-    static auto configure_component(T &component, sf::Vector2f position, float scale) -> void;
+    static auto configureComponent(T &component, sf::Vector2f position, float scale) -> void;
 
-    auto create_button(const std::string &text, const sf::Font &font, sf::Vector2f position) -> Button;
-    auto create_button(const std::string &text, sf::Vector2f position) -> Button;
+    auto createButton(const std::string &text, const sf::Font &font, sf::Vector2f position) -> Button;
+    auto createButton(const std::string &text, sf::Vector2f position) -> Button;
 
 public:
 
     BaseMenu();
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-    std::vector<Button>& get_buttons();
+    std::vector<Button>& getButtons();
 
 
 };

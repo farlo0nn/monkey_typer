@@ -2,10 +2,10 @@
 
 PauseMenu::PauseMenu(Callback onResume, Callback onMainMenu, Callback onRestart) : BaseMenu() {
 
-    auto startButton = create_button("RESUME", {1080/2, 720/2 - 170});
+    auto startButton = createButton("RESUME", {1080/2, 720/2 - 170});
 
-    auto helpButton = create_button("MAIN MENU", {1080/2, 720/2 - 20});
-    auto exitButton = create_button("RESTART", {1080/2, 720/2 + 130});
+    auto helpButton = createButton("MAIN MENU", {1080/2, 720/2 - 20});
+    auto exitButton = createButton("RESTART", {1080/2, 720/2 + 130});
 
     buttons.emplace_back(startButton);
     buttons.back().onRelease(onResume);

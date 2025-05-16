@@ -18,7 +18,7 @@ namespace utils {
 
     template <typename T>
     requires EnumWithCount<T>
-    auto get_random_enum_option() -> T {
+    auto getRandomEnumOption() -> T {
         std::random_device rdev;
         std::mt19937 rgen(rdev());
         std::uniform_int_distribution<int> dist(0,static_cast<int>(T::COUNT)-1);

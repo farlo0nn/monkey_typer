@@ -20,17 +20,17 @@ auto Enemy::update(int round, float deltaTime) -> void {
         state.direction.x * velocity * deltaTime,
         state.direction.y * velocity * deltaTime
     };
-    if (state.has_reached_point()) {
-        state.advance_to_next_waypoint();
+    if (state.hasReachedPoint()) {
+        state.advanceToNextWaypoint();
     }
 
     sprite.move(move_to);
     sprite.update(deltaTime);
     state.position = sprite.getPosition();
-    update_label_position();
+    updateLabelPosition();
 }
 
-auto Enemy::update_label_position() -> void {
+auto Enemy::updateLabelPosition() -> void {
     auto sprite_bounds = sprite.getGlobalBounds();
     auto displayed_word_bounds = label.getLocalBounds();
     label.setPosition({

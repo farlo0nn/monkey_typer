@@ -39,7 +39,7 @@ private:
     bool active_target;
     int base_speed;
 
-    auto update_label_position() -> void;
+    auto updateLabelPosition() -> void;
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
         target.draw(sprite, states);

@@ -16,7 +16,7 @@ protected:
 
 
     template<typename  T>
-    static auto configure_component(T &component, sf::Vector2f position, float scalex, float scaley) -> void;
+    static auto configureComponent(T &component, sf::Vector2f position, float scalex, float scaley) -> void;
 
     auto scale(sf::Vector2f scale) -> void;
     auto setPosition(sf::Vector2f position) -> void;

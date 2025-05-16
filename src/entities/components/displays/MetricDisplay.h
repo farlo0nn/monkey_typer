@@ -6,7 +6,7 @@
 #include <string>
 
 
-inline auto to_str_with_precision(float value, int precision) -> std::string {
+inline auto toStrWithPrecision(float value, int precision) -> std::string {
     std::ostringstream out;
     out << std::fixed << std::setprecision(precision) << value;
     return out.str();
@@ -88,7 +88,7 @@ auto MetricDisplay<T>::setCharacterSize(const int& characterSize) -> void {
 
 template <Arithmetic T>
 auto MetricDisplay<T>::updateLabel() -> void {
-    this->valueLabel.setString(to_str_with_precision(this->value, 1));
+    this->valueLabel.setString(toStrWithPrecision(this->value, 1));
 }
 
 template <>

@@ -32,7 +32,6 @@ FetchContent_MakeAvailable(SFML)
 add_executable(Funzies src/main.cpp
 
         src/core/states/GameState.h
-        src/core/states/GameMode.h
 
         src/core/Game.cpp
         src/core/Game.h

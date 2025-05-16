@@ -4,7 +4,6 @@
 #include "EnemyState.h"
 #include "Directions.h"
 #include <unordered_map>
-#include "../../../../build/_deps/sfml-src/include/SFML/System/Vector2.hpp"
 
 inline const auto ENEMY_SPAWN_POSITIONS = std::unordered_map<SpawnPosition, EnemyState>{
     {SpawnPosition::UPPER_LEFT, EnemyState(SpawnPosition::UPPER_LEFT, Directions::LEFT)},
