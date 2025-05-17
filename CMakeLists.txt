@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(Funzies)
+project(MonkeyType)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -19,79 +19,107 @@ FetchContent_Declare(
         SYSTEM
 )
 
-FetchContent_Declare(
-        fmt
-        GIT_REPOSITORY https://github.com/fmtlib/fmt
-        GIT_TAG 11.1.4
-
-)
-
-FetchContent_MakeAvailable(fmt)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(Funzies src/main.cpp
-        src/core/GameState.h
-        src/core/GameMode.h
-        src/entities/enemy/Enemy.h
+add_executable(MonkeyType src/main.cpp
+
+        # -- CORE --
+
+        src/core/states/GameState.h
+
         src/core/Game.cpp
         src/core/Game.h
-        src/logic/GeneralGlossary.cpp
-        src/logic/GeneralGlossary.h
-        src/logic/Word.cpp
-        src/logic/Word.h
-        src/logic/RoundGlossary.cpp
-        src/logic/RoundGlossary.h
-        src/entities/enemy/EnemyComparator.cpp
-        src/entities/enemy/EnemyComparator.h
-        src/entities/enemy/EnemySpawnPositions.h
-        src/entities/enemy/EnemyState.h
-        src/entities/enemy/EnemyState.cpp
+
+        src/core/config/Fonts.h
+        src/core/config/Difficulty.cpp
+        src/core/config/Difficulty.h
+
+        src/core/timing/PausableClock.cpp
+        src/core/timing/PausableClock.h
+
+        src/core/io/FileManager.cpp
+        src/core/io/FileManager.h
+
+        # -- ENTITIES --
+
+        src/entities/enemy/comparators/EnemyComparator.cpp
+        src/entities/enemy/comparators/EnemyComparator.h
+
+        src/entities/enemy/spawn/EnemyState.h
+        src/entities/enemy/spawn/EnemyState.cpp
+
         src/entities/enemy/Enemy.cpp
-        src/entities/enemy/Spawner.cpp
-        src/entities/enemy/Spawner.h
-        src/entities/enemy/EnemySpawnPositions.cpp
+        src/entities/enemy/Enemy.h
+
+        src/entities/enemy/spawn/Spawner.cpp
+        src/entities/enemy/spawn/Spawner.h
+
+        src/entities/enemy/spawn/EnemySpawnPositions.cpp
+        src/entities/enemy/spawn/EnemySpawnPositions.h
+
+        src/entities/enemy/label/HighlightedLabel.cpp
+        src/entities/enemy/label/HighlightedLabel.h
+        src/entities/enemy/sprite/AnimatedSprite.cpp
+        src/entities/enemy/sprite/AnimatedSprite.h
+
+        src/entities/enemy/spawn/Directions.h
+
+        src/entities/components/buttons/Button.cpp
+        src/entities/components/buttons/Button.h
+
+        src/entities/components/menus/BaseMenu.cpp
+        src/entities/components/menus/BaseMenu.h
+        src/entities/components/menus/GameOverMenu.cpp
+        src/entities/components/menus/GameOverMenu.h
+        src/entities/components/menus/MainMenu.cpp
+        src/entities/components/menus/MainMenu.h
+        src/entities/components/menus/PauseMenu.cpp
+        src/entities/components/menus/PauseMenu.h
+
+        src/entities/components/hud/Hud.cpp
+        src/entities/components/hud/Hud.h
+
+        src/entities/components/settings/Slider.cpp
+        src/entities/components/settings/Slider.h
+        src/entities/components/settings/Settings.cpp
+        src/entities/components/settings/Settings.h
+
+        src/entities/components/arrowMenus/BaseArrowMenu.cpp
+        src/entities/components/arrowMenus/BaseArrowMenu.h
+        src/entities/components/arrowMenus/DifficultyArrowMenu.cpp
+        src/entities/components/arrowMenus/DifficultyArrowMenu.h
+        src/entities/components/arrowMenus/FontArrowMenu.cpp
+        src/entities/components/arrowMenus/FontArrowMenu.h
+
+        src/entities/components/errors/ErrorBox.cpp
+        src/entities/components/errors/ErrorBox.h
+
+        src/entities/components/utils/utils.h
+
+        src/entities/components/decorations/Decoration.cpp
+        src/entities/components/decorations/Decoration.h
+
+        # -- LOGIC --
+
+        src/logic/glossaries/GeneralGlossary.cpp
+        src/logic/glossaries/GeneralGlossary.h
+        src/logic/glossaries/RoundGlossary.cpp
+        src/logic/glossaries/RoundGlossary.h
+
+        src/logic/word/Word.cpp
+        src/logic/word/Word.h
+
+
+
+        src/logic/typer/TypeStat.cpp
+        src/logic/typer/TypeStat.h
+        src/logic/typer/Typer.cpp
+        src/logic/typer/Typer.h
+
+        # -- OTHER --
+
         src/Constants.h
-        src/logic/Typer.cpp
-        src/logic/Typer.h
-        src/entities/enemy/HighlightedLabel.cpp
-        src/entities/enemy/HighlightedLabel.h
-        src/entities/enemy/SpawnPosition.h
-        src/entities/enemy/AnimatedSprite.cpp
-        src/entities/enemy/AnimatedSprite.h
         src/utils.cpp
-        src/entities/enemy/Directions.h
-        src/entities/components/Button.cpp
-        src/entities/components/Button.h
-        src/entities/components/BaseMenu.cpp
-        src/entities/components/BaseMenu.h
-        src/entities/components/GameOverMenu.cpp
-        src/entities/components/GameOverMenu.h
-        src/entities/components/MainMenu.cpp
-        src/entities/components/MainMenu.h
-        src/entities/components/PauseMenu.cpp
-        src/entities/components/PauseMenu.h
-        src/entities/components/Hud.cpp
-        src/entities/components/Hud.h
-        src/entities/components/Slider.cpp
-        src/entities/components/Slider.h
-        src/entities/utils/PausableClock.cpp
-        src/entities/utils/PausableClock.h
-        src/logic/TypeStat.cpp
-        src/logic/TypeStat.h
-        src/entities/components/Settings.cpp
-        src/entities/components/Settings.h
-        src/entities/components/Slider.cpp
-        src/entities/components/BaseArrowMenu.cpp
-        src/entities/components/BaseArrowMenu.h
-        src/entities/components/DifficultyArrowMenu.cpp
-        src/entities/components/DifficultyArrowMenu.h
-        src/core/Fonts.h
-        src/entities/components/FontArrowMenu.cpp
-        src/entities/components/FontArrowMenu.h
-        src/entities/components/ErrorBox.cpp
-        src/entities/components/ErrorBox.h
-        src/core/Difficulty.cpp
-        src/core/Difficulty.h
 )
 
-target_link_libraries(Funzies PRIVATE SFML::Graphics fmt)
+target_link_libraries(MonkeyType PRIVATE SFML::Graphics)
