@@ -34,7 +34,6 @@ auto Typer::type(const char &letter) -> TypeStat {
 
         } else {
             resetWordTyping();
-            setActiveEnemy(letter);
             typeStat = type(letter);
         }
     }

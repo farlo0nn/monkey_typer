@@ -248,7 +248,6 @@ auto Game::handle(const sf::Event::TextEntered& textEntered) -> void {
         auto u = textEntered.unicode;
         auto c = static_cast<char>(u);
         auto typeStat = m_typer.type(c);
-        std::cout << typeStat.is_correct << " " << typeStat.is_word_typed << " " << typeStat.word_size << std::endl;
         if (typeStat.is_word_typed) {
             score += (typeStat.word_size) * difficulty.scoreMultiplier;
         };
@@ -405,12 +404,12 @@ auto Game::configRound() -> void {
         auto state = ENEMY_SPAWN_POSITIONS.at(pos);
         spawn_index++;
 
-        auto animated_sprite = getAnimatedSprite(utils::getRandomEnumOption<as::AnimatedSprites>());
-        animated_sprite.setTextureDirection(state.texture_direction);
+        auto enemyType = utils::getRandomEnumOption<Enemies>();
+
         m_spawner.enqueue(
             Enemy(
                 state,
-                animated_sprite,
+                enemyType,
                 word,
                 m_font,
                 25,

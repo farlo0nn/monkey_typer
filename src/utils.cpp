@@ -18,11 +18,11 @@ namespace utils {
 
     template <typename T>
     requires EnumWithCount<T>
+
     auto getRandomEnumOption() -> T {
-        std::random_device rdev;
-        std::mt19937 rgen(rdev());
-        std::uniform_int_distribution<int> dist(0,static_cast<int>(T::COUNT)-1);
-        auto spawn_position = static_cast<T>(dist(rgen));
+        auto generator = std::mt19937(std::random_device{}());
+        auto random_index = generator() % static_cast<int>(T::COUNT);
+        auto spawn_position = static_cast<T>(random_index);
         return spawn_position;
     }
 }
