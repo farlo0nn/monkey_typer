@@ -31,6 +31,7 @@ public:
     auto setRound(int round) -> void;
 
     auto getHighestScore() const -> int;
+    auto reset() -> void;
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };

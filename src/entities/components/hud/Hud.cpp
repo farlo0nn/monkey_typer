@@ -59,3 +59,8 @@ auto Hud::setWPM (float wpm) -> void {
 auto Hud::getHighestScore() const -> int {
     return highestScore.getValue();
 }
+
+auto Hud::reset() -> void {
+    score.setValue(0);
+    wpm.setValue(0);
+}

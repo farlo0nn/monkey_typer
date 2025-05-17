@@ -23,12 +23,12 @@ Game::Game()
               this->gamestate_ = GameState::GAME;
               wpm_clock_.start();
           },
-          [&]() { this->gamestate_ = GameState::MENU; score_=0; },
+          [&]() { this->gamestate_ = GameState::MENU; score_=0; hud_.reset(); },
           [&]() { startGame(); }
       ),
       gameOverMenu_(
           [&]() { startGame(); },
-          [&]() { this->gamestate_ = GameState::MENU; score_=0; }
+          [&]() { this->gamestate_ = GameState::MENU; score_=0; hud_.reset(); }
       ),
       hud_({WINDOW_SIZE.x / 2, WINDOW_SIZE.y - 20}),
       errorBox_(font_, ""),
