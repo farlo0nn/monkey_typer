@@ -11,7 +11,7 @@ GeneralGlossary::GeneralGlossary() {};
 GeneralGlossary::GeneralGlossary(const std::vector<Word> &words) : words(words) {}
 
 
-auto GeneralGlossary::get_words() -> std::vector<Word> {
+auto GeneralGlossary::getWords() -> std::vector<Word> {
     return words;
 }
 
@@ -33,7 +33,7 @@ auto GeneralGlossary::load(const std::string& path) -> void {
     }
 }
 
-auto GeneralGlossary::get_random_words(const int& n, int minLength, int maxLength) -> std::vector<Word> {
+auto GeneralGlossary::getRandomWords(const int& n, int minLength, int maxLength) -> std::vector<Word> {
     auto filtered = std::vector<Word>();
 
     std::ranges::copy_if(

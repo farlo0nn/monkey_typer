@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(Funzies)
+project(MonkeyType)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -19,31 +19,28 @@ FetchContent_Declare(
         SYSTEM
 )
 
-FetchContent_Declare(
-        fmt
-        GIT_REPOSITORY https://github.com/fmtlib/fmt
-        GIT_TAG 11.1.4
-
-)
-
-FetchContent_MakeAvailable(fmt)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(Funzies src/main.cpp
+add_executable(MonkeyType src/main.cpp
+
+        # -- CORE --
 
         src/core/states/GameState.h
 
         src/core/Game.cpp
         src/core/Game.h
 
-        src/logic/glossaries/GeneralGlossary.cpp
-        src/logic/glossaries/GeneralGlossary.h
+        src/core/config/Fonts.h
+        src/core/config/Difficulty.cpp
+        src/core/config/Difficulty.h
 
-        src/logic/word/Word.cpp
-        src/logic/word/Word.h
+        src/core/timing/PausableClock.cpp
+        src/core/timing/PausableClock.h
 
-        src/logic/glossaries/RoundGlossary.cpp
-        src/logic/glossaries/RoundGlossary.h
+        src/core/io/FileManager.cpp
+        src/core/io/FileManager.h
+
+        # -- ENTITIES --
 
         src/entities/enemy/comparators/EnemyComparator.cpp
         src/entities/enemy/comparators/EnemyComparator.h
@@ -60,15 +57,10 @@ add_executable(Funzies src/main.cpp
         src/entities/enemy/spawn/EnemySpawnPositions.cpp
         src/entities/enemy/spawn/EnemySpawnPositions.h
 
-        src/Constants.h
-
-
         src/entities/enemy/label/HighlightedLabel.cpp
         src/entities/enemy/label/HighlightedLabel.h
         src/entities/enemy/sprite/AnimatedSprite.cpp
         src/entities/enemy/sprite/AnimatedSprite.h
-
-        src/utils.cpp
 
         src/entities/enemy/spawn/Directions.h
 
@@ -92,14 +84,6 @@ add_executable(Funzies src/main.cpp
         src/entities/components/settings/Settings.cpp
         src/entities/components/settings/Settings.h
 
-        src/core/timing/PausableClock.cpp
-        src/core/timing/PausableClock.h
-
-        src/logic/typer/TypeStat.cpp
-        src/logic/typer/TypeStat.h
-        src/logic/typer/Typer.cpp
-        src/logic/typer/Typer.h
-
         src/entities/components/arrowMenus/BaseArrowMenu.cpp
         src/entities/components/arrowMenus/BaseArrowMenu.h
         src/entities/components/arrowMenus/DifficultyArrowMenu.cpp
@@ -107,16 +91,35 @@ add_executable(Funzies src/main.cpp
         src/entities/components/arrowMenus/FontArrowMenu.cpp
         src/entities/components/arrowMenus/FontArrowMenu.h
 
-        src/core/config/Fonts.h
-        src/core/config/Difficulty.cpp
-        src/core/config/Difficulty.h
-
         src/entities/components/errors/ErrorBox.cpp
         src/entities/components/errors/ErrorBox.h
 
         src/entities/components/utils/utils.h
-        src/core/io/FileManager.cpp
-        src/core/io/FileManager.h
+
+        src/entities/components/decorations/Decoration.cpp
+        src/entities/components/decorations/Decoration.h
+
+        # -- LOGIC --
+
+        src/logic/glossaries/GeneralGlossary.cpp
+        src/logic/glossaries/GeneralGlossary.h
+        src/logic/glossaries/RoundGlossary.cpp
+        src/logic/glossaries/RoundGlossary.h
+
+        src/logic/word/Word.cpp
+        src/logic/word/Word.h
+
+
+
+        src/logic/typer/TypeStat.cpp
+        src/logic/typer/TypeStat.h
+        src/logic/typer/Typer.cpp
+        src/logic/typer/Typer.h
+
+        # -- OTHER --
+
+        src/Constants.h
+        src/utils.cpp
 )
 
-target_link_libraries(Funzies PRIVATE SFML::Graphics fmt)
+target_link_libraries(MonkeyType PRIVATE SFML::Graphics)

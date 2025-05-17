@@ -20,7 +20,7 @@ auto RoundGlossary::add(const std::vector<Enemy>& enemies) -> void {
     }
 }
 auto RoundGlossary::add(const Enemy& enemy) -> void {
-    this->_glossary[enemy.get_word().first_letter].emplace_back(enemy);
+    this->_glossary[enemy.getWord().first_letter].emplace_back(enemy);
     this->_enemy_number += 1;}
 
 auto RoundGlossary::at(const char &index) -> std::deque<Enemy>& {

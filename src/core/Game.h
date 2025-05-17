@@ -58,34 +58,44 @@ private:
     auto setDifficulty() -> void;
 
     // Member variables
-    sf::RenderWindow m_window;
-    MainMenu m_mainMenu;
-    PauseMenu m_pauseMenu;
-    GameOverMenu m_gameOverMenu;
-    Hud m_hud;
-    sf::Font m_font;
-    sf::Texture m_enemy_texture;
-    sf::Texture m_background_texture;
-    sf::Sprite m_background;
-    sf::Texture m_castle_texture;
-    sf::Texture m_destroyed_castle_texture;
-    sf::Sprite m_castle;
-    ErrorBox errorBox;
-    std::queue<std::string> errorQueue;
-    sf::Text m_instructions;
-    GeneralGlossary m_general_glossary;
-    Spawner m_spawner;
-    int m_round_number;
-    Typer m_typer;
-    GameState m_gamestate;
-    sf::Texture m_tree_texture;
-    std::vector<AnimatedSprite> m_decorations;
-    double score;
-    PausableClock m_wpm_clock;
-    Settings m_settingsPannel;
-    sf::Clock m_clock;
-    sf::Clock m_errorClock;
-    bool m_showingError = false;
-    const float m_errorDisplayTime = 3.f;
-    Difficulty difficulty;
+    sf::RenderWindow window_;
+
+    GameState gamestate_;
+    MainMenu mainMenu_;
+    PauseMenu pauseMenu_;
+    GameOverMenu gameOverMenu_;
+
+    Settings settingsPanel_;
+
+    Hud hud_;
+
+    sf::Font font_;
+
+    sf::Texture background_texture_;
+    sf::Texture castle_texture_;
+    sf::Texture destroyed_castle_texture_;
+
+    sf::Sprite background_;
+    sf::Sprite castle_;
+
+    ErrorBox errorBox_;
+    std::queue<std::string> errorQueue_;
+
+    GeneralGlossary general_glossary_;
+
+    int round_number_;
+    Difficulty difficulty_;
+    Spawner spawner_;
+    Typer typer_;
+    double score_;
+
+    sf::Texture tree_texture_;
+    std::vector<AnimatedSprite> decorations_;
+
+    sf::Clock gameClock_;
+    sf::Clock errorClock_;
+    PausableClock wpm_clock_;
+
+    bool showingError_ = false;
+    const float errorDisplayTime_ = 3.f;
 };

@@ -8,7 +8,7 @@ class GeneralGlossary {
 public:
     GeneralGlossary();
     GeneralGlossary(const std::vector<Word> &words);
-    auto get_words() -> std::vector<Word>;
+    auto getWords() -> std::vector<Word>;
     auto load(const std::string& path) -> void;
-    auto get_random_words(const int &n, int minLength, int maxLength) -> std::vector<Word>;
+    auto getRandomWords(const int &n, int minLength, int maxLength) -> std::vector<Word>;
 };

@@ -1,5 +1,4 @@
-
-#pragma once  
+#pragma once
 #include "../spawn/Directions.h"  
 #include "SFML/Graphics/Sprite.hpp"  
 #include "SFML/Graphics/Texture.hpp"  

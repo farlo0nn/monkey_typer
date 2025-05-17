@@ -10,7 +10,7 @@ auto Typer::setActiveEnemy(const char& letter) -> void{
     if (!active_enemy) {
         if (Enemy* enemy = glossary.getClosestEnemyByLetter(letter)) {
             active_enemy = enemy;
-            active_enemy->set_active(true);
+            active_enemy->setActive(true);
         }
     }
 }
@@ -20,14 +20,14 @@ auto Typer::type(const char &letter) -> TypeStat {
     auto typeStat = TypeStat();
 
     if (active_enemy) {
-        if (active_enemy->get_current_expected_char() == letter) {
+        if (active_enemy->getCurrentExpectedChar() == letter) {
             typeStat.is_correct = true;
-            typeStat.word_size = active_enemy->get_word().value.size();
-            active_enemy->type_next_char();
+            typeStat.word_size = active_enemy->getWord().value.size();
+            active_enemy->typeNextChar();
 
-            if (active_enemy->is_word_typed()) {
-                glossary.pop(active_enemy->get_word().first_letter);
-                typeStat.word_size = active_enemy->get_word().value.size();
+            if (active_enemy->isWordTyped()) {
+                glossary.pop(active_enemy->getWord().first_letter);
+                typeStat.word_size = active_enemy->getWord().value.size();
                 typeStat.is_word_typed = true;
                 active_enemy = nullptr;
             }
@@ -42,7 +42,7 @@ auto Typer::type(const char &letter) -> TypeStat {
 
 auto Typer::resetWordTyping() -> void {
     if (active_enemy) {
-        active_enemy->reset_typing();
+        active_enemy->resetTyping();
         active_enemy = nullptr;
     }
 }

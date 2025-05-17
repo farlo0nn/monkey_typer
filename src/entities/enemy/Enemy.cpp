@@ -14,7 +14,7 @@ Enemy::Enemy(const EnemyState &state, Enemies enemyType,  const Word& word, cons
     active_target(false)
 {
 
-    set_position(state.position);
+    setPosition(state.position);
     if (!texture->loadFromFile(getPath(enemyType))) {
         throw std::runtime_error("Incorrect path to texture");
     }
@@ -25,7 +25,7 @@ Enemy::Enemy(const EnemyState &state, Enemies enemyType,  const Word& word, cons
     sprite->setTexture(*texture);
     sprite->setTextureDirection(state.texture_direction);
 
-    set_position(state.position);
+    setPosition(state.position);
     this->base_speed = base_speed;
     label.setString(word.value);
     label.setColors(sf::Color::Green, sf::Color::White);
@@ -46,10 +46,10 @@ auto Enemy::update(int round, float deltaTime) -> void {
     sprite->move(move_to);
     sprite->update(deltaTime);
     state.position = sprite->getPosition();
-    update_label_position();
+    updateLabelPosition();
 }
 
-auto Enemy::update_label_position() -> void {
+auto Enemy::updateLabelPosition() -> void {
     auto sprite_bounds = sprite->getGlobalBounds();
     auto displayed_word_bounds = label.getLocalBounds();
     label.setPosition({
@@ -58,57 +58,57 @@ auto Enemy::update_label_position() -> void {
     });
 }
 
-auto Enemy::get_sprite() const -> const AnimatedSprite& {
+auto Enemy::getSprite() const -> const AnimatedSprite& {
     return *sprite;
 }
 
-auto Enemy::get_word() const -> const Word & {
+auto Enemy::getWord() const -> const Word & {
     return word;
 }
 
-auto Enemy::get_enemy_state() const -> EnemyState {
+auto Enemy::getEnemyState() const -> EnemyState {
     return state;
 }
 
-auto Enemy::get_typing_index() const -> int {
+auto Enemy::getTypingIndex() const -> int {
     return typing_index;
 }
 
-auto Enemy::set_position(const sf::Vector2f &pos) -> void {
+auto Enemy::setPosition(const sf::Vector2f &pos) -> void {
     sprite->setPosition(pos);
 }
 
-auto Enemy::is_active() const -> bool {
+auto Enemy::isActive() const -> bool {
     return this->active_target;
 }
 
-auto Enemy::set_active(bool active) -> void {
+auto Enemy::setActive(bool active) -> void {
     this->active_target = active;
 }
 
-auto Enemy::get_current_expected_char() const -> char {
+auto Enemy::getCurrentExpectedChar() const -> char {
     if (typing_index < word.value.length()) {
         return word.value[this->typing_index];
     }
     return '\0';
 }
 
-auto Enemy::type_next_char() -> void {
+auto Enemy::typeNextChar() -> void {
     if (this->typing_index < word.value.length()) {
         this->typing_index++;
         label.setTypingIndex(this->typing_index);
     }
 }
 
-auto Enemy::is_word_typed() const -> bool {
+auto Enemy::isWordTyped() const -> bool {
     return (typing_index == word.value.length());
 }
 
 
-auto Enemy::reset_typing() -> void {
+auto Enemy::resetTyping() -> void {
     typing_index = 0;
     label.reset();
-    set_active(false);
+    setActive(false);
 }
 
 auto Enemy::operator==(const Enemy& other) const -> bool {
@@ -116,7 +116,7 @@ auto Enemy::operator==(const Enemy& other) const -> bool {
 };
 
 auto Enemy::collides(const sf::Sprite& other) const -> bool {
-    if (other.getGlobalBounds().contains(get_sprite().getPosition())) {
+    if (other.getGlobalBounds().contains(getSprite().getPosition())) {
         return true;
     }
     return false;

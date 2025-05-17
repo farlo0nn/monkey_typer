@@ -10,8 +10,8 @@ bool EnemyComparator::operator()(const Enemy& a, const Enemy& b) const {
 }
 
 auto EnemyComparator::getPathLength(const Enemy& e) -> float {
-    auto e_path = e.get_enemy_state().path;
-    auto cur_waypoint = e.get_sprite().getPosition();
+    auto e_path = e.getEnemyState().path;
+    auto cur_waypoint = e.getSprite().getPosition();
     auto lengthA = float();
     for (auto& waypoint : e_path) {
         lengthA += std::hypot(waypoint.x - cur_waypoint.x, waypoint.y - cur_waypoint.y);
