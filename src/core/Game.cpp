@@ -23,12 +23,12 @@ Game::Game()
               this->gamestate_ = GameState::GAME;
               wpm_clock_.start();
           },
-          [&]() { this->gamestate_ = GameState::MENU; },
+          [&]() { this->gamestate_ = GameState::MENU; score_=0; },
           [&]() { startGame(); }
       ),
       gameOverMenu_(
           [&]() { startGame(); },
-          [&]() { this->gamestate_ = GameState::MENU; }
+          [&]() { this->gamestate_ = GameState::MENU; score_=0; }
       ),
       hud_({WINDOW_SIZE.x / 2, WINDOW_SIZE.y - 20}),
       errorBox_(font_, ""),
@@ -244,8 +244,8 @@ auto Game::handle(const sf::Event::MouseButtonReleased& mouseReleased) -> void {
 
 auto Game::handle(const sf::Event::TextEntered& textEntered) -> void {
     if (gamestate_ == GameState::GAME) {
-        auto u = textEntered.unicode;
-        auto c = static_cast<char>(u);
+        const auto u = textEntered.unicode;
+        const auto c = static_cast<char>(u);
         auto typeStat = typer_.type(c);
         if (typeStat.is_word_typed) {
             score_ += (typeStat.word_size) * difficulty_.scoreMultiplier;
@@ -267,39 +267,39 @@ auto Game::configCastle(const sf::Texture& texture) -> void {
     castle_.setScale({0.75, 0.75});
     castle_.setPosition({WINDOW_SIZE.x/2, WINDOW_SIZE.y/2 - 10});
     castle_.setTexture(texture);
-    auto spriteBounds = castle_.getGlobalBounds();
+    const auto spriteBounds = castle_.getGlobalBounds();
 
-    auto offsetx = (spriteBounds.size.x) / 2.f;
-    auto offsety = (spriteBounds.size.y) / 2.f;
+    const auto offsetx = (spriteBounds.size.x) / 2.f;
+    const auto offsety = (spriteBounds.size.y) / 2.f;
 
     castle_.move({-offsetx, -offsety});
 }
 
 auto Game::configBackground() -> void {
-    auto windowSize = window_.getSize();
-    auto rect = background_.getLocalBounds();
+    const auto windowSize = window_.getSize();
+    const auto rect = background_.getLocalBounds();
 
-    auto scalex = static_cast<float>(windowSize.x) / rect.size.x;
-    auto scaley = static_cast<float>(windowSize.y) / rect.size.y;
+    const auto scalex = static_cast<float>(windowSize.x) / rect.size.x;
+    const auto scaley = static_cast<float>(windowSize.y) / rect.size.y;
     auto scale = std::max(scalex, scaley);
 
     background_.setScale({scale, scale});
 
-    auto spriteBounds = background_.getGlobalBounds();
+    const auto spriteBounds = background_.getGlobalBounds();
 
     // centers the backgroudn
-    auto offsetx = (spriteBounds.size.x - windowSize.x) / 2.f;
-    auto offsety = (spriteBounds.size.y - windowSize.y) / 2.f;
+    const auto offsetx = (spriteBounds.size.x - windowSize.x) / 2.f;
+    const auto offsety = (spriteBounds.size.y - windowSize.y) / 2.f;
 
     background_.setPosition({-offsetx, -offsety});
 }
 
 auto Game::configDecorations() -> void {
     auto params = Decoration::getDecorationParams();
-    for (auto& param : params) {
+    for (auto&[position, scale] : params) {
         auto decoration = AnimatedSprite(tree_texture_, 6, 0.16f);
-        decoration.setPosition(param.first);
-        decoration.scale({param.second, param.second});
+        decoration.setPosition(position);
+        decoration.scale({scale, scale});
 
         decorations_.push_back(decoration);
     }

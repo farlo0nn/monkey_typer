@@ -13,9 +13,9 @@ class AnimatedSprite : public sf::Sprite {
     Directions texture_direction;  
 public:  
     AnimatedSprite(const sf::Texture& texture, int frameCount, float frameTime);  
-    AnimatedSprite(sf::Texture& texture, int frameCount);  
-    AnimatedSprite(sf::Texture& texture);  
+    AnimatedSprite(const sf::Texture& texture, int frameCount);
+    AnimatedSprite(const sf::Texture& texture);
   
-    auto update(float deltaTime) -> void;  
+    auto update(const float &deltaTime) -> void;
     auto setTextureDirection(Directions direction) -> void;  
 };

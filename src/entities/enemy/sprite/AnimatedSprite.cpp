@@ -22,12 +22,12 @@ auto AnimatedSprite::setTextureDirection(Directions direction) -> void {
     }
 }
 
-AnimatedSprite::AnimatedSprite(sf::Texture& texture, int frameCount)
+AnimatedSprite::AnimatedSprite(const sf::Texture& texture, const int frameCount)
     :  AnimatedSprite(texture, frameCount, 0.1f) {}
 
-AnimatedSprite::AnimatedSprite(sf::Texture& texture) : AnimatedSprite(texture, 1) {}
+AnimatedSprite::AnimatedSprite(const sf::Texture& texture) : AnimatedSprite(texture, 1) {}
 
-auto AnimatedSprite::update(float deltaTime) -> void {
+auto AnimatedSprite::update(const float& deltaTime) -> void {
     elapsedTime += deltaTime;
     if (elapsedTime >= frameTime) {
         elapsedTime = 0.f;
