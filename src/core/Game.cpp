@@ -313,23 +313,24 @@ auto Game::configRound() -> void {
 
 
     auto spawn_positions = std::vector<SpawnPosition>();
-    for (const auto& [pos, _] : ENEMY_SPAWN_POSITIONS) {
+    for (const auto& [pos, _] : ENEMY_SPAWN_STATES) {
         spawn_positions.push_back(pos);
     }
 
-    std::ranges::shuffle(spawn_positions, std::mt19937{std::random_device{}()});
+    auto generator = std::mt19937(std::random_device{}());
+    std::ranges::shuffle(spawn_positions, generator);
 
     auto spawn_index = 0;
     for (auto word : words) {
 
         // rearrange position if all of them were covered
         if (spawn_index >= spawn_positions.size()) {
-            std::ranges::shuffle(spawn_positions, std::mt19937{std::random_device{}()});
+            std::ranges::shuffle(spawn_positions, generator);
             spawn_index = 0;
         }
 
         auto pos = spawn_positions[spawn_index];
-        auto state = ENEMY_SPAWN_POSITIONS.at(pos);
+        auto state = ENEMY_SPAWN_STATES.at(pos);
         spawn_index++;
 
         auto enemyType = utils::getRandomEnumOption<Enemies>();

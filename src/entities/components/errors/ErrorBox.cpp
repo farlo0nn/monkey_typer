@@ -2,7 +2,8 @@
 #include "ErrorBox.h"
 
 ErrorBox::ErrorBox(const sf::Font &font, const std::string &message) :
-    message(font, message),
+    font("assets/fonts/pixelify-sans.ttf"),
+    message(this->font, message),
     backgroundTexture("assets/ui/error/errorBoxBanner.png"),
     background(backgroundTexture) {
 
